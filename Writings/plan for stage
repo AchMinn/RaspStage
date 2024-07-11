@@ -1,0 +1,23 @@
+1 - Architecture réseau: 
+
+		Routeurs
+		Switches
+		Points d'accès Wi-Fi
+		Appareils IoT et Raspberry Pi
+
+2 - Configuration des Raspberry Pi:
+		
+		Install Raspberry Pi OS Lite sur chaque Raspberry Pi
+		processus de traitement de données to execute localement sur les Raspberry Pi
+		Programmez les Raspberry Pi pour interagir avec les différents capteurs
+		check si les Raspberry Pi communiquent correctement avec les autres composants du réseau
+
+3 - Déploiement de l'application web: 
+		
+		Hébergez l'application web sur un serveur local
+		Développez une interface utilisateur qui integre les nouvelles fonctionnalités
+
+4 - Intégration de l'IA: 
+
+		reconnaissance faciale, la commande vocale ou les systèmes de prédiction et de recommandation.
+		

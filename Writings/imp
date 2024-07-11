@@ -1,0 +1,55 @@
+	Things needed for a proper set up 
+-
+ Raspios installed on sd card
+- screen, keyboard, mouse to get wifi, then do it remotely
+- Fixed ip so remote control doesn't get pegged
+
+- Install .net 5 "https://www.petecodes.co.uk/install-and-use-microsoft-dot-net-5-with-the-raspberry-pi/"
+- Install an IDE if you want to edit using the rasp
+- Security settings config ( Turn on SSH, SPI...)
+
+	"Now you can do what you want" 
+
+use this a lot "github.com/dotnet/iot"
+	using System.Device.Gpio
+	using Iot.Device.Bindings
+
+
+For pin layouts "https://pinout.xyz/"
+For hardware recipes "https://gpiozero.readthedocs.io/en/stable/recipes.html#led"
+
+A development experience usually goes like :
+	1 - Develop in your IDE
+	2 - Publish to a directory 
+		- Deployment to be self contained
+		- Target runtime "linux-arm"
+		- Target framework "net5.0"
+	3 - SFTP files to the raspberry pi using FileZilla "https://thirtythreedown.github.io/SOFTPiEasySFTPFileTransfer.html"
+	4 - VNC (Setting up permissions to run your code)
+		- chown <user> <Directory or File> e.g chown pi ./Control
+		- chmod +777 <Directory or File> e.g chmod +777 ./Control
+		- ./<Dll Name> e.g ./Control
+
+		##I2C 
+	- (To see more go to telegram or https://youtu.be/_w2g_fWEQP0?t=1370)
+	- Enable on the hardware 
+	(Install i2c tools)
+	- sudo apt-get install i2c-tools
+	(Check if it's working)
+	- sudo i2cdetect -y 1
+
+Prototyping (Testing) :
+	- Jumper cables (M-F, F-F)
+	- Din Rail Mounting
+	- Connector Blocks
+	- Breadboard
+
+For a device list "https://github.com/dotnet/iot/tree/main/src/devices"
+
+Use blazor a SPA application framework, SignalR push updates
+
+Do not forget you have the power of C# to control lots of hardware
+
+Not everything you can buy can be controlled yet
+
+And AzureIotHub can be used to connect and control your device from the internet and receive live events from it 
