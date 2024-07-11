@@ -1,3 +1,5 @@
+# This code will be on the raspberryPI
+
 import paho.mqtt.client as mqtt
 
 def on_connect(client, userdata, flags, rc):
@@ -17,5 +19,5 @@ client.connect("localhost", 1883, 60) #Replace with MQTT broker's address
 print("Listening Forever")
 try:
 	client.loop_forever()
-except 
+except:
 	print("Something happened while connecting the broker!")
