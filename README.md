@@ -18,13 +18,15 @@ Il s’agit principalement de :
 - Security settings config ( Turn on SSH, SPI, I2C...)
   
 # development experience usually goes like :
-	1 - Develop in your IDE
-	2 - Publish to a directory 
-		- Deployment to be self contained
-		- Target runtime "linux-arm"
-		- Target framework "net5.0"
-	3 - SFTP files to the raspberry pi using FileZilla "https://thirtythreedown.github.io/SOFTPiEasySFTPFileTransfer.html"
-	4 - VNC (Setting up permissions to run your code)
-		- chown <user> <Directory or File> e.g chown pi ./Control
-		- chmod +777 <Directory or File> e.g chmod +777 ./Control
-		- ./<Dll Name> e.g ./Control
+
+- Develop in your IDE
+- Publish to a directory 
+	- Deployment to be self contained
+	- Target runtime "linux-arm"
+	- Target framework "net5.0"
+   For targets change up the yml 
+- SFTP files to the raspberry pi using FileZilla "https://thirtythreedown.github.io/SOFTPiEasySFTPFileTransfer.html"
+- VNC (Setting up permissions to run your code)
+	- chown <user> <Directory or File> e.g chown pi ./Control
+	- chmod +777 <Directory or File> e.g chmod +777 ./Control
+	- ./<Dll Name> e.g ./Control
