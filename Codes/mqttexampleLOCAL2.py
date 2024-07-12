@@ -6,7 +6,7 @@ mqtt_broker_address = "192.168.10.174"
 mqtt_channel = "channel"
 
 # Message to be sent
-msg = "Led is turned on"
+msg = "Led is turned off"
 
 # Publish the message 
 publish.single(mqtt_channel, msg, hostname=mqtt_broker_address)

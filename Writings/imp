@@ -53,3 +53,15 @@ Do not forget you have the power of C# to control lots of hardware
 Not everything you can buy can be controlled yet
 
 And AzureIotHub can be used to connect and control your device from the internet and receive live events from it 
+
+
+------------------------
+
+Instead of Azure, MQTT was used to control the devices and send messages 
+
+
+"High thoughts"
+
+So the button is pressed, that will lead to the pi that's always running a code"need to make it" that waits for a button press that runs "mqttexampleLOCAL.py" and if it's a switch it also runs "led.py" on the pi that will then send a message to an always running subscriber(You become a subscriber by having the mqttexample.py ran on your computer with the correct topic) that it was pressed and that will be showed in the web application
+
+So general idea is when a switch is flipped it will go through the electrical stuff, arrive to the raspberry as electricty through a gpio(for example 17) now my pi is always running a code that is waiting for a 1 in 17 that will then run a code to send electricity in another gpio (for example 27) and that will go the electric way and turn the light on, now after that another code is ran by my pi that will send a mqtt message that the light is turned on to the subscribers (that already subscribed and have a code running of them subbed to a certain topic) and now the subscribers will receive a message that gets viewed in a web application and tadah done
