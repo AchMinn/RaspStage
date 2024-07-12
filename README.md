@@ -6,3 +6,25 @@ Il s’agit principalement de :
     • Déploiement de l’application web sur un serveur local
     • Mettre à jour l’interface utilisateur pour intégrer les nouvelles fonctionnalités 
     • Intégration avec l'IA : Implémenter des systèmes intelligents telles que la reconnaissance faciale, la commande vocale ou des systèmes de prédictions ou de recommandations générées par l’IA ;
+
+# Things needed for a proper set up 
+
+- Raspios installed on sd card
+- screen, keyboard, mouse to get wifi, then do it remotely
+- Fixed ip so remote control doesn't get pegged ( In case it does, use nmap to get the ip )
+
+- Install .net 5 "https://www.petecodes.co.uk/install-and-use-microsoft-dot-net-5-with-the-raspberry-pi/" ( if needed )
+- Install an IDE if you want to edit using the rasp 
+- Security settings config ( Turn on SSH, SPI, I2C...)
+  
+# development experience usually goes like :
+	1 - Develop in your IDE
+	2 - Publish to a directory 
+		- Deployment to be self contained
+		- Target runtime "linux-arm"
+		- Target framework "net5.0"
+	3 - SFTP files to the raspberry pi using FileZilla "https://thirtythreedown.github.io/SOFTPiEasySFTPFileTransfer.html"
+	4 - VNC (Setting up permissions to run your code)
+		- chown <user> <Directory or File> e.g chown pi ./Control
+		- chmod +777 <Directory or File> e.g chmod +777 ./Control
+		- ./<Dll Name> e.g ./Control
