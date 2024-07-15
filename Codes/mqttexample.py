@@ -1,10 +1,10 @@
-# This code will be on the raspberryPI
+# This code will be on the computer receiving a messafe from the raspberry
 
 import paho.mqtt.client as mqtt
 
 def on_connect(client, userdata, flags, rc):
 	print(f"Connected with result code : {rc}")
-	client.subscribe("channel")
+	client.subscribe("/SmartLightNode1")
 
 def on_message(client, userdata, msg):
 	print(f"Received message on topic {msg.topic}:{msg.payload}")

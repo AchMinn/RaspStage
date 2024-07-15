@@ -3,13 +3,12 @@ from signal import pause
 
 # Replace these values with your MQTT broker's address and the channel you wish to publish to
 mqtt_broker_address = "192.168.10.174"
-mqtt_channel = "channel"
+mqtt_channel = "/SmartLightNode1"
 
 sensor = LightSensor(18)
 led = PWMLED(16)
 
-# Inverser la valeur du capteur de lumière
-led.source = lambda: 1 - sensor.value
+button = Button(19)
 
 def check_light_level():
     while True:
@@ -23,4 +22,16 @@ def check_light_level():
         	publish.single(mqtt_channel, "Niveau de lumière à 100%", hostname=mqtt_broker_address)
         pause(0.1)  # Pause de 0,1 seconde pour éviter de saturer la console
 
-check_light_level()
+def button_pressed():
+    if led.value == 0:
+        led.value = 1
+        publish.single(mqtt_channel, "Lumière allumée manuellement", hostname=mqtt_broker_address)
+    else:
+        led.value = 0
+        publish.single(mqtt_channel, "Lumière éteinte manuellement", hostname=mqtt_broker_address)
+
+
+while True:
+	button.when_pressed = button_pressed()
+	led.source = lambda: 1 - sensor.value
+	check_light_level()
