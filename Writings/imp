@@ -50,7 +50,7 @@ Use blazor a SPA application framework, SignalR push updates
 
 Do not forget you have the power of C# to control lots of hardware
 
-Not everything you can buy can be controlled "yet"
+Not everything you can buy can be controlled "yet"2
 
 And AzureIotHub can be used to connect and control your device from the internet and receive live events from it 
 
