@@ -30,6 +30,32 @@ A development experience usually goes like :
 		- chmod +777 <Directory or File> e.g chmod +777 ./Control
 		- ./<Dll Name> e.g ./Control
 
+		(If no DE)
+			- sudo apt install tasksel
+			- sudo tasksel
+		(Then install VNC)
+			- sudo apt install tigervnc-standalone-server tigervnc-common
+			- vncpasswd (To set password for future vnc logins)
+		(If firewall is enabled)
+			- ufw allow 5901/tcp
+		(If you want to connect to vnc with ssh tunneling)
+			- ssh -L 5901:localhost:5901 -N -f -l username server_ip
+
+		##Install MQTT for communication
+			- wget http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key
+			- sudo apt-key add mosquitto-repo.gpg.key 
+			- sudo apt-get install mosquitto
+
+		##Enabling remote access on the Mosquitto MQTT broker
+			By default, our Mosquitto broker only accepts connection requests from the localhost and not from other devices on the network.
+				- add the following configurations to the Mosquitto configuration file : 
+					- listener 1883
+    				- allow_anonymous true
+
+    			- sudo service mosquitto restart
+
+To enable the remote access function 
+
 		##I2C 
 	- (To see more go to telegram or https://youtu.be/_w2g_fWEQP0?t=1370)
 	- Enable on the hardware 
