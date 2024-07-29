@@ -99,5 +99,3 @@ So general idea is when a switch is flipped it will go through the electrical st
 
 ---------------------------------------------------
 
-
-For the Website it will be hosted locally in the server a login that uses keycloak and a connection with rasps with a js code using mqtt to send codes or to run codes 
