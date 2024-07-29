@@ -1,11 +1,22 @@
 from django.db import models
+from django.utils.timezone import now
 
 class Room(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
-
+    created_at = models.DateTimeField(default=now)
+    updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.name
+    @property
+
+    def device_count(self):
+        return self.devices.count()
+
+    def save(self, *args, **kwargs):
+        # Update the updated_at field whenever the model is saved
+        self.updated_at = now()
+        super().save(*args, **kwargs)
 
 class Device(models.Model):
     name = models.CharField(max_length=100)

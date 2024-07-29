@@ -1,0 +1,30 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+  <h1>{{ room.name }}</h1>
+
+  <div class="row">
+    <div class="col-md-6">
+      {% if room.image %}
+      <img src="{{ room.image.url }}" class="img-fluid" alt="{{ room.name }}">
+      {% else %}
+      <img src="{% static 'images/default_room.png' %}" class="img-fluid" alt="{{ room.name }}">
+      {% endif %}
+    </div>
+    <div class="col-md-6">
+      <p>{{ room.description }}</p>
+      <p>
+        <strong>Number of Devices:</strong> {{ room.device_count }}
+      </p>
+      <p>
+        <strong>Created:</strong> {{ room.created_at|date:"M d, Y" }}
+      </p>
+      <p>
+        <strong>Updated:</strong> {{ room.updated_at|date:"M d, Y" }}
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

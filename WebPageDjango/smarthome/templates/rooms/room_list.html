@@ -1,0 +1,33 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+
+{% block content %}
+<div class="container">
+  <h1>Rooms</h1>
+
+  <div class="row">
+    {% for room in room_list %}
+    <div class="col-md-4 mb-4">
+      <div class="card">
+        <a href="{% url 'room-detail' room.id %}">
+          {% if room.image %}
+          <img src="{{ room.image.url }}" class="card-img-top" alt="{{ room.name }}">
+          {% else %}
+          <img src="{% static 'images/default_room.png' %}" class="card-img-top" alt="{{ room.name }}">
+          {% endif %}
+        </a>
+        <div class="card-body">
+          <h5 class="card-title"><a style="color: #000000;text-decoration: none;" href="{% url 'room-detail' room.id %}">{{ room.name }}</a></h5>
+          <p class="card-text">{{ room.description }}</p>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-md-12">
+      <p>No rooms found.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

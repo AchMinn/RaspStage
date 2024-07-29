@@ -46,13 +46,13 @@ class DeviceDetailView(DetailView):
     context_object_name = 'device'
     template_name = 'devices/device_detail.html'
 
-# class RoomListView(ListView):
-#     model = Room
-#     context_object_name = 'room_list'
-#     template_name = '/smarthome/rooms_list.html'
+class RoomListView(ListView):
+    model = Room
+    context_object_name = 'room_list'
+    template_name = 'rooms/room_list.html'
 
 
-# class RoomDetailView(DetailView):
-#     model = Room
-#     context_object_name = 'room'
-#     template_name = '/smarthome/room_detail.html'
+class RoomDetailView(DetailView):
+    model = Room
+    context_object_name = 'room'
+    template_name = 'rooms/room_detail.html'
