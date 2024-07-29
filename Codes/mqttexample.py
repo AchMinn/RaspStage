@@ -3,8 +3,9 @@
 import paho.mqtt.client as mqtt
 
 def on_connect(client, userdata, flags, rc):
-	print(f"Connected with result code : {rc}")
-	client.subscribe("/SmartLightNode1")
+	channel = "channel"
+	client.subscribe(channel)
+	print(f"Connected to channel '{channel}' with result code : {rc}")
 
 def on_message(client, userdata, msg):
 	print(f"Received message on topic {msg.topic}:{msg.payload}")

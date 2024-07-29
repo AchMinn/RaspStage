@@ -6,6 +6,7 @@ mqtt_broker_address = "192.168.10.174"
 mqtt_channel = "/SmartLightNode1"
 
 sensor = LightSensor(18)
+ambient_sensor = LightSensor(15)
 led = PWMLED(16)
 
 button = Button(19)
@@ -33,5 +34,5 @@ def button_pressed():
 
 while True:
 	button.when_pressed = button_pressed()
-	led.source = lambda: 1 - sensor.value
+	led.source = lambda: 1 - ambient_sensor.value
 	check_light_level()
