@@ -9,15 +9,19 @@ class Room(models.Model):
 
 class Device(models.Model):
     name = models.CharField(max_length=100)
+    model = models.CharField(max_length=100, default='Unknown')
     description = models.TextField(null=True, blank=True)
+    processor = models.CharField(max_length=100, null=True, blank=True)
+    ram = models.CharField(max_length=100, null=True, blank=True)
+    storage = models.CharField(max_length=100, null=True, blank=True)
+    display = models.CharField(max_length=100, null=True, blank=True)
+    connectivity = models.CharField(max_length=100, null=True, blank=True)
+    image = models.ImageField(upload_to='device_images', null=True, blank=True)
     room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, related_name='devices')
     is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
-
-    def get_absolute_url(self):
-        return reverse('device_detail', kwargs={'pk': self.pk})
 
 class Sensor(models.Model):
     name = models.CharField(max_length=100)

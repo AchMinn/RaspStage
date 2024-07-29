@@ -1,0 +1,51 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+  <h1>Device Details</h1>
+
+  <div class="device-details">
+    <div class="device-info">
+      <h2>{{ device.name }}</h2>
+      <p>Model: {{ device.model }}</p>
+      <p>Serial Number: {{ device.serial_number }}</p>
+      <p>Status: {% if device.is_active %}Active{% else %}Not Active{% endif %}</p>
+      <p>Room: {{ device.room }} </p>
+    </div>
+
+    <div class="device-image">
+      {% if device.image %}
+        <img src="{{ device.image.url }}" alt="{{ device.name }} Image">
+      {% else %}
+        <img src="{% static 'images/default_device.svg' %}" alt="Default Device Image">
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="device-description">
+    <h3>Description</h3>
+    <p>{{ device.description }}</p>
+  </div>
+
+  <div class="device-specifications">
+    <h3>Specifications</h3>
+    <ul>
+      <li>Processor: {% if device.processor %}{{ device.processor }}{% else %}N/A{% endif %}</li>
+      <li>RAM: {% if device.ram %}{{ device.ram }}{% else %}N/A{% endif %}</li>
+      <li>Storage: {% if device.storage %}{{ device.storage }}{% else %}N/A{% endif %}</li>
+      <li>Display: {% if device.display %}{{ device.display }}{% else %}N/A{% endif %}</li>
+      <li>Connectivity: {% if device.connectivity %}{{ device.connectivity }}{% else %}N/A{% endif %}</li>
+    </ul>
+  </div>
+
+  <div class="device-actions">
+    <a href="" class="btn btn-primary">Edit Device</a>
+    <a href="" class="btn btn-danger">Delete Device</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrahead %}
+  <link rel="stylesheet" href="{% static 'css/device_detail.css' %}">
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>SmartHome home page</h1>
+  <p>
+    Welcome to SmartHome, a website developed by
+    <em>An orakin website</em>!
+  </p>
+
+  <h2>Search</h2>
+  <form action="" method="get">
+    <label for="search_word">Search for:</label>
+    <input type="text" id="search_word" name="search_word" value="{{ search_word }}">
+    <button type="submit">Search</button>
+  </form>
+
+  <h2>Dynamic content</h2>
+  <p>The smart house has the following:</p>
+  <ul>
+    <li><strong>Rooms:</strong> {{ num_rooms }}</li>
+    <li><strong>Devices:</strong> {{ num_devices }}</li>
+    <li><strong>Active Devices:</strong> {{ num_devices_active }}</li>
+    <li><strong>Device Types:</strong> {{ num_device_types }}</li>
+  </ul>
+
+  {% if search_word %}
+  <h2>Search Results</h2>
+  <ul>
+    <li><strong>Rooms containing "{{ search_word }}": </strong> {{ num_rooms_containing }}</li>
+    <li><strong>Devices containing "{{ search_word }}": </strong> {{ num_devices_containing }}</li>
+  </ul>
+  {% endif %}
+{% endblock %}

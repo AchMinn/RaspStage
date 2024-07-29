@@ -1,0 +1,33 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Devices</h1>
+
+  {% if device_list %}
+    <table class="device-list-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Type</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for device in device_list %}
+          <tr>
+            <td><a href="{% url 'device-detail' device.id %}">{{ device.name }}</a></td>
+            <td>{{ device.description }}</td>
+            <td>{{ device.device_type }}</td>
+            <td>{% if device.is_active %}Active{% else %}Not Active{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No devices found.</p>
+  {% endif %}
+{% endblock %}
+{% block extrahead %}
+  <link rel="stylesheet" href="../../static/css/styles.css">
+{% endblock %}
