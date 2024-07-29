@@ -13,9 +13,7 @@ Il s’agit principalement de :
 - screen, keyboard, mouse to get wifi, then do it remotely
 - Fixed ip so remote control doesn't get pegged ( In case it does, use nmap to get the ip )
 
-- Install .net 5 "https://www.petecodes.co.uk/install-and-use-microsoft-dot-net-5-with-the-raspberry-pi/" ( if needed )
-- Install an IDE if you want to edit using the rasp 
-- Security settings config ( Turn on SSH, SPI, I2C...)
+- Install an IDE if you want to edit using the rasp - Security settings config ( Turn on SSH, SPI, I2C...)
   
 # development experience usually goes like :
 
