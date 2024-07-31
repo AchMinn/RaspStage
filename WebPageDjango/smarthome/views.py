@@ -3,6 +3,7 @@ from django.shortcuts import render
 from .models import Room, Device
 from django.views import generic
 from django.views.generic import ListView, DetailView
+from django.shortcuts import render
 
 def home_view(request):
     """View function for the home page of the smart home application."""
@@ -40,19 +41,22 @@ class DeviceListView(generic.ListView):
     model = Device
     context_object_name = 'device_list'   # your own name for the list as a template variable
     template_name = 'devices/device_list.html'  # Specify your own template name/location
+    paginate_by = 5
 
 class DeviceDetailView(DetailView):
     model = Device
     context_object_name = 'device'
     template_name = 'devices/device_detail.html'
-
+    paginate_by = 
+2
 class RoomListView(ListView):
     model = Room
     context_object_name = 'room_list'
     template_name = 'rooms/room_list.html'
-
+    paginate_by = 5
 
 class RoomDetailView(DetailView):
     model = Room
     context_object_name = 'room'
     template_name = 'rooms/room_detail.html'
+    paginate_by = 2

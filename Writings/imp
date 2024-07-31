@@ -99,3 +99,53 @@ So general idea is when a switch is flipped it will go through the electrical st
 
 ---------------------------------------------------
 
+CREATE TABLE users (
+  id INT PRIMARY KEY,
+  username VARCHAR(255) UNIQUE,
+  email VARCHAR(255) UNIQUE
+);
+
+CREATE TABLE rooms (
+  id INT PRIMARY KEY,
+  name VARCHAR(255) CHECK (name IN ('salon', 'cuisine', 'chambre', 'salle de bain')),
+  description TEXT
+);
+
+CREATE TABLE devices (
+  id INT PRIMARY KEY,
+  name VARCHAR(255),
+  model VARCHAR(255),
+  manufacturer VARCHAR(255),
+  firmware VARCHAR(255),
+  connection_status BOOLEAN,
+  last_connected DATETIME,
+  room_id INT FOREIGN KEY REFERENCES rooms(id),
+  description TEXT,
+  device_type ENUM ('sensor', 'actuator')
+);
+
+CREATE TABLE sensor_data (
+  id INT PRIMARY KEY,
+  device_id INT FOREIGN KEY REFERENCES devices(id),
+  timestamp DATETIME,
+  sensor_type VARCHAR(255),
+  sensor_value DECIMAL(10,2)
+);
+
+CREATE TABLE measurements (
+  id INT PRIMARY KEY,
+  device_id INT FOREIGN KEY REFERENCES devices(id),
+  timestamp DATETIME,
+  value DECIMAL(10,2)
+);
+
+CREATE TABLE history (
+  id INT PRIMARY KEY,
+  table_name VARCHAR(255),
+  record_id INT,
+  field_name VARCHAR(255),
+  old_value TEXT,
+  new_value TEXT,
+  updated_at DATETIME,
+  updated_by INT FOREIGN KEY REFERENCES users(id)
+);
