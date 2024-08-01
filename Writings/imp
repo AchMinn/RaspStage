@@ -129,7 +129,15 @@ CREATE TABLE sensor_data (
   device_id INT FOREIGN KEY REFERENCES devices(id),
   timestamp DATETIME,
   sensor_type VARCHAR(255),
-  sensor_value DECIMAL(10,2)
+  sensor_value DECIMAL(10,2) AS (
+    CASE WHEN device_id IN (
+      SELECT id
+      FROM devices
+      WHERE device_type = 'actuator'
+    ) THEN NULL
+    ELSE sensor_value
+    END
+  )
 );
 
 CREATE TABLE measurements (

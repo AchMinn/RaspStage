@@ -47,8 +47,8 @@ class DeviceDetailView(DetailView):
     model = Device
     context_object_name = 'device'
     template_name = 'devices/device_detail.html'
-    paginate_by = 
-2
+    paginate_by = 2
+
 class RoomListView(ListView):
     model = Room
     context_object_name = 'room_list'
