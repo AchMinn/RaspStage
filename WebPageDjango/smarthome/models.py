@@ -67,7 +67,7 @@ class Device(models.Model):
     is_active = models.BooleanField(default=False)
     device_type = models.CharField(max_length=255, choices=[
         ('lampe', 'Lampe'), ('plug', 'Plug')
-    ],default="Sensor")
+    ],default="Lampe")
 
     def __str__(self):
         return self.name
@@ -115,7 +115,7 @@ class Sensor(models.Model):
     name = models.CharField(max_length=100)
     sensor_type = models.CharField(max_length=255, default="NAN")
     description = models.TextField(null=True, blank=True)
-    room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, related_name='devices')
+    room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, related_name='sensors')
     value = models.FloatField(default=0)
     last_updated = models.DateTimeField(auto_now=True)
 

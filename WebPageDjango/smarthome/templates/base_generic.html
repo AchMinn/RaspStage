@@ -23,6 +23,9 @@
               <li><a href="{% url 'home' %}">Home</a></li>
               <li><a href="{% url 'devices' %}">All Devices</a></li>
               <li><a href="{% url 'rooms' %}">All Rooms</a></li>
+              {% if is_logged_in %}
+                <li><a href="{% url 'logout' %}">Disconnect</a></li>
+              {% endif %}
             </ul>
           {% endblock %}
         </div>

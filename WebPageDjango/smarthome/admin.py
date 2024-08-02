@@ -17,19 +17,19 @@ class MeasurementInline(admin.TabularInline):
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')
-    inlines = [DeviceInline]
+    inlines = [DeviceInline, SensorInline]
 
 @admin.register(Device)
 class DeviceAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'room', 'is_active')
     list_filter = ('room', 'is_active')
     search_fields = ('name', 'description')
-    inlines = [SensorInline, MeasurementInline]
+    inlines = [MeasurementInline]
 
 @admin.register(Sensor)
 class SensorAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'device', 'value', 'last_updated')
-    list_filter = ('device',)
+    list_display = ('name', 'description', 'room', 'value', 'last_updated')
+    list_filter = ('room',)
     search_fields = ('name', 'description')
 
 @admin.register(Measurement)
