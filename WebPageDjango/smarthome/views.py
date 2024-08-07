@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.contrib.auth import logout
 from .models import Room, Device
 from django.views import generic
 from django.views.generic import ListView, DetailView, CreateView, TemplateView
@@ -10,10 +11,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import LogoutView
 from django.db import IntegrityError
 
-@login_required
 def home_view(request):
     """View function for the home page of the smart home application."""
 
@@ -41,10 +40,11 @@ def home_view(request):
         'num_rooms_containing': num_rooms_containing,
         'num_devices_containing': num_devices_containing,
         'search_word': search_word,
+        'is_logged_in': request.user.is_authenticated,
+        'user': request.user,
     }
+    return render(request, 'home.html', context)
 
-    # Render the HTML template home.html with the data in the context variable
-    return render(request, 'home.html', {'username': request.user.username})
 
 def login_view(request):
     if request.method == 'POST':
@@ -52,39 +52,70 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('home')
+            
+            # Get the 'next' parameter from the URL
+            next_url = request.GET.get('next')
+
+            # If the 'next' parameter is present, redirect to that URL
+            if next_url:
+                return redirect(next_url)
+            else:
+                # Otherwise, redirect to the home page
+                return redirect('home')    
     else:
         form = AuthenticationForm()
 
-    is_logged_in = request.user.is_authenticated
-    return render(request, 'login.html', {'form': form, 'is_logged_in': is_logged_in})
+    context = {
+        'form': form,
+        'is_logged_in': request.user.is_authenticated,
+        'user': request.user,
+    }
 
-class CustomLogoutView(LoginView):
-    next_page = reverse_lazy('login')
+    return render(request, 'login.html', context)
 
 class DeviceListView(generic.ListView):
     model = Device
     context_object_name = 'device_list'   # your own name for the list as a template variable
     template_name = 'devices/device_list.html'  # Specify your own template name/location
     paginate_by = 5
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_logged_in'] = self.request.user.is_authenticated
+        context['user'] = self.request.user
+        return context
 
 class DeviceDetailView(DetailView):
     model = Device
     context_object_name = 'device'
     template_name = 'devices/device_detail.html'
     paginate_by = 2
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_logged_in'] = self.request.user.is_authenticated
+        context['user'] = self.request.user
+        return context
 
 class RoomListView(ListView):
     model = Room
     context_object_name = 'room_list'
     template_name = 'rooms/room_list.html'
     paginate_by = 5
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_logged_in'] = self.request.user.is_authenticated
+        context['user'] = self.request.user
+        return context
 
 class RoomDetailView(DetailView):
     model = Room
     context_object_name = 'room'
     template_name = 'rooms/room_detail.html'
     paginate_by = 2
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_logged_in'] = self.request.user.is_authenticated
+        context['user'] = self.request.user
+        return context
 
 class RegisterView(CreateView):
     form_class = UserCreationForm
@@ -96,11 +127,21 @@ class GuestView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         try:
-            user = User.objects.create_user(username='guest', password='guest1234')
-        except IntegrityError:
-            # User with username 'guest' already exists
+            # Create a new guest user if it doesn't exist
             user = User.objects.get(username='guest')
+        except User.DoesNotExist:
+            # Create a new guest user
+            user = User.objects.create_user(username='guest', password='guest1234')
 
-        # Log the user in
+        # Log the guest user in
         login(request, user)
-        return super().get(request, *args, **kwargs)
+
+        # Get the context data and pass it to the template
+        context = self.get_context_data(**kwargs)
+        context['is_logged_in'] = request.user.is_authenticated
+        context['user'] = request.user
+        return self.render_to_response(context)
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')  # Replace 'login_url' with the name of your login URL
