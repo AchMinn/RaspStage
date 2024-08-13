@@ -2,6 +2,22 @@
 {% load static %}
 
 {% block content %}
+<style>
+.device-image {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.device-control-button {
+  margin-top: 1rem;
+}
+
+.device-control-button .btn {
+  display: block;
+  width: 100%;
+}
+</style>
 <div class="container">
   <h1>Device Details</h1>
 
@@ -9,9 +25,12 @@
     <div class="device-info">
       <h2>{{ device.name }}</h2>
       <p>Model: {{ device.model }}</p>
+      <p>Manufacturer: {{ device.manufacturer }}</p>
+      <p>Firmware: {{ device.firmware }}</p>
       <p>Serial Number: {{ device.serial_number }}</p>
       <p>Status: {% if device.is_active %}Active{% else %}Not Active{% endif %}</p>
       <p>Room: {{ device.room }} </p>
+      <p>Device Type: {{ device.get_device_type_display }}</p>
     </div>
 
     <div class="device-image">
@@ -20,6 +39,9 @@
       {% else %}
         <img src="{% static 'images/default_device.svg' %}" alt="Default Device Image">
       {% endif %}
+      <div class="device-control-button">
+        <a href="{% url 'device-control' device.pk %}" class="btn btn-primary">Control Device</a>
+      </div>
     </div>
   </div>
 
@@ -31,17 +53,13 @@
   <div class="device-specifications">
     <h3>Specifications</h3>
     <ul>
-      <li>Processor: {% if device.processor %}{{ device.processor }}{% else %}N/A{% endif %}</li>
-      <li>RAM: {% if device.ram %}{{ device.ram }}{% else %}N/A{% endif %}</li>
-      <li>Storage: {% if device.storage %}{{ device.storage }}{% else %}N/A{% endif %}</li>
-      <li>Display: {% if device.display %}{{ device.display }}{% else %}N/A{% endif %}</li>
-      <li>Connectivity: {% if device.connectivity %}{{ device.connectivity }}{% else %}N/A{% endif %}</li>
+      <li>Created : {{ device.last_connected|date:'Y-m-d H:i:s' }}</li>
     </ul>
   </div>
 
   <div class="device-actions">
-    <a href="" class="btn btn-primary">Edit Device</a>
-    <a href="" class="btn btn-danger">Delete Device</a>
+    <a href="{% url 'device-update' device.pk %}" class="btn btn-primary">Edit Device</a>
+    <a href="{% url 'device-delete' device.pk %}" class="btn btn-danger">Delete Device</a>
   </div>
 </div>
 {% endblock %}

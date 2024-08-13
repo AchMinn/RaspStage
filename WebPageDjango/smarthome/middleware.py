@@ -26,7 +26,7 @@ class RestrictAccessMiddleware:
 
         # Allow access to certain pages for regular users
         if request.user.is_authenticated and not request.user.is_superuser:
-            allowed_urls = ['devices', 'rooms', 'guest']
+            allowed_urls = ['devices', 'rooms', 'guest', 'device-detail', 'room-detail', 'device-control']
             if current_url in allowed_urls:
                 return self.get_response(request)
 

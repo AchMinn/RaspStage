@@ -1,33 +1,54 @@
 {% extends "base_generic.html" %}
+{% load static %}
 
 {% block content %}
-  <h1>Devices</h1>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h1>Devices</h1>
+        <div class="d-flex justify-content-end mb-3">
+          <a href="{% url 'device-create' %}" class="btn btn-primary">Add Device</a>
+        </div>
+      </div>
+    </div>
 
-  {% if device_list %}
-    <table class="device-list-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Description</th>
-          <th>Type</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for device in device_list %}
+    {% if device_list %}
+      <table class="device-list-table table table-striped table-hover">
+        <thead>
           <tr>
-            <td><a href="{% url 'device-detail' device.id %}">{{ device.name }}</a></td>
-            <td>{{ device.description }}</td>
-            <td>{{ device.device_type }}</td>
-            <td>{% if device.is_active %}Active{% else %}Not Active{% endif %}</td>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>No devices found.</p>
-  {% endif %}
+        </thead>
+        <tbody>
+          {% for device in device_list %}
+            <tr>
+              <td><a href="{% url 'device-detail' device.id %}">{{ device.name }}</a></td>
+              <td>{{ device.description }}</td>
+              <td>{{ device.get_device_type_display }}</td>
+              <td>{% if device.is_active %}Active{% else %}Not Active{% endif %}</td>
+              <td>
+                <a href="{% url 'device-control' device.id %}" class="btn btn-primary btn-sm">Control</a>
+                <a href="{% url 'device-update' device.id %}" class="btn btn-secondary btn-sm">Edit</a>
+                <a href="{% url 'device-delete' device.id %}" class="btn btn-danger btn-sm">Delete</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="row">
+        <div class="col-12">
+          <p>No devices found.</p>
+        </div>
+      </div>
+    {% endif %}
+  </div>
 {% endblock %}
+
 {% block extrahead %}
-  <link rel="stylesheet" href="../../static/css/styles.css">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 {% endblock %}

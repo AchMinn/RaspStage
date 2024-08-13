@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.timezone import now
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.conf import settings
 
 class Room(models.Model):
     name = models.CharField(max_length=255, choices=[
@@ -216,5 +217,5 @@ class History(models.Model):
     old_value = models.TextField()
     new_value = models.TextField()
     updated_at = models.DateTimeField()
-    updated_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     message = models.TextField(null=True, blank=True)

@@ -1,15 +1,17 @@
+from .models import Room, Device, History
+from django.conf import settings
+from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth import logout
-from .models import Room, Device
 from django.views import generic
-from django.views.generic import ListView, DetailView, CreateView, TemplateView
+from django.views.generic import ListView, DetailView, CreateView, TemplateView, DeleteView, UpdateView
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 
@@ -94,6 +96,95 @@ class DeviceDetailView(DetailView):
         context['is_logged_in'] = self.request.user.is_authenticated
         context['user'] = self.request.user
         return context
+
+class DeviceControlView(DetailView):
+    model = Device
+    context_object_name = 'device'
+    template_name = 'devices/device_control.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_logged_in'] = self.request.user.is_authenticated
+        context['user'] = self.request.user
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        # Add your device control logic here
+        # For example, you can update the device's state based on the form data
+        self.object.is_active = not self.object.is_active
+        self.object.save()
+        return self.render_to_response(self.get_context_data())
+
+class DeviceCreateView(CreateView):
+    model = Device
+    template_name = 'devices/device_create.html'
+    fields = ['name', 'model', 'description', 'manufacturer', 'firmware', 'room', 'is_active', 'device_type']
+    success_url = reverse_lazy('devices')
+    permission_required = 'devices.create_device'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_logged_in'] = self.request.user.is_authenticated
+        context['user'] = self.request.user
+        context['room_list'] = Room.objects.all()
+        return context
+
+    def form_valid(self, form):
+            form.instance.created_by = self.request.user
+            form.instance.updated_by = self.request.user
+            response = super().form_valid(form)
+
+            # Create the History record
+            History.objects.create(
+                table_name='devices',
+                record_id=self.object.id,
+                field_name='',
+                old_value='',
+                new_value=str(self.object),
+                updated_at=timezone.now(),
+                updated_by=self.request.user,
+                message=f'Device "{self.object.name}" was created.'
+            )
+
+            return response
+
+class DeviceUpdateView(UpdateView):
+    model = Device
+    template_name = 'devices/device_update.html'
+    fields = ['name', 'model', 'description', 'manufacturer', 'firmware', 'room', 'device_type']
+    success_url = reverse_lazy('devices')
+
+class DeviceDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    model = Device
+    template_name = 'devices/device_confirm_delete.html'
+    success_url = reverse_lazy('devices')
+    permission_required = 'devices.delete_device'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_logged_in'] = self.request.user.is_authenticated
+        context['user'] = self.request.user
+        return context
+
+    def delete(self, request, *args, **kwargs):
+            self.object = self.get_object()
+            success_url = self.get_success_url()
+
+            # Create the History record
+            History.objects.create(
+                table_name='devices',
+                record_id=self.object.id,
+                field_name='',
+                old_value='',
+                new_value='',
+                updated_at=timezone.now(),
+                updated_by=request.user,
+                message=f'Device "{self.object.name}" was deleted.'
+            )
+
+            self.object.delete()
+            return HttpResponseRedirect(success_url)
 
 class RoomListView(ListView):
     model = Room

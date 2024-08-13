@@ -1,7 +1,7 @@
 {% extends 'base_generic.html' %}
 
 {% block content %}
-  <h1>Login</h1>
+  <h1 style="border-top-style: solid;border-top-width: 55px;">Login</h1>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
