@@ -31,8 +31,11 @@
               <a class="nav-link" href="{% url 'rooms' %}">All Rooms</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'logout' %}">Disconnect</a>
+              <a class="nav-link" href="{% url 'history-dashboard' %}">Dashboard</a>
             </li>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'logout' %}">Disconnect</a>
           </ul>
           <span class="navbar-text">
             Welcome, {{ user.username }}

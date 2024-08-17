@@ -236,3 +236,34 @@ class GuestView(TemplateView):
 def logout_view(request):
     logout(request)
     return redirect('login')  # Replace 'login_url' with the name of your login URL
+
+
+class HistoryDashboardView(LoginRequiredMixin, ListView):
+    model = History
+    template_name = 'history/history_dashboard.html'
+    context_object_name = 'history_records'
+    ordering = ['-updated_at']
+
+    def get_queryset(self):
+        queryset = History.objects.all()
+        table_name = self.request.GET.get('table_name')
+        record_id = self.request.GET.get('record_id')
+        field_name = self.request.GET.get('field_name')
+
+        if table_name:
+            queryset = queryset.filter(table_name__icontains=table_name)
+        if record_id:
+            queryset = queryset.filter(record_id=record_id)
+        if field_name:
+            queryset = queryset.filter(field_name__icontains=field_name)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['table_name'] = self.request.GET.get('table_name', '')
+        context['record_id'] = self.request.GET.get('record_id', '')
+        context['field_name'] = self.request.GET.get('field_name', '')
+        context['is_logged_in'] = self.request.user.is_authenticated
+        context['user'] = self.request.user
+        return context
