@@ -155,6 +155,35 @@ class DeviceUpdateView(UpdateView):
     fields = ['name', 'model', 'description', 'manufacturer', 'firmware', 'room', 'device_type']
     success_url = reverse_lazy('devices')
 
+    def form_valid(self, form):
+        # Get the original device instance
+        original_device = self.get_object()
+
+        # Set the updated_by field
+        form.instance.updated_by = self.request.user
+
+        # Save the updated device
+        response = super().form_valid(form)
+
+        # Create the History record
+        History.objects.create(
+            table_name='devices',
+            record_id=form.instance.id,
+            field_name='',
+            old_value=str(original_device),
+            new_value=str(form.instance),
+            updated_at=timezone.now(),
+            updated_by=self.request.user,
+            message=f'Device "{original_device.name}" was updated.'
+        )
+
+        return response
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_logged_in'] = self.request.user.is_authenticated
+        context['user'] = self.request.user
+        return context
+
 class DeviceDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Device
     template_name = 'devices/device_confirm_delete.html'
