@@ -1,0 +1,36 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}
+  <title>Consumption Dashboard</title>
+{% endblock %}
+
+{% block content %}
+  <h1>Consumption Dashboard</h1>
+
+  <form class="form-inline mb-3">
+    <div class="form-group">
+      <label for="device-name">Device Name:</label>
+      <input type="text" class="form-control" id="device-name" name="device_name" value="{{ device_name }}">
+    </div>
+    <button type="submit" class="btn btn-primary">Filter</button>
+  </form>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Device</th>
+        <th>Last Updated</th>
+        <th>Consumption</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for record in consumption_records %}
+        <tr>
+          <td>{{ record.device.name }}</td>
+          <td>{{ record.last_updated }}</td>
+          <td>{{ record.value }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

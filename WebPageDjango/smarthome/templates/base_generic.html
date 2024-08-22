@@ -16,40 +16,42 @@
 </head>
 <body>
   {% if is_logged_in %}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'home' %}">SmartHome</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarNav">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'devices' %}">All Devices</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'rooms' %}">All Rooms</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'history-dashboard' %}">Dashboard</a>
-            </li>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'logout' %}">Disconnect</a>
-          </ul>
-          <span class="navbar-text">
-            Welcome, {{ user.username }}
-          </span>
-        </div>
-      </div>
-    </nav>
-  {% else %}
-    <div class="alert alert-warning alert-dismissible fade show fixed-top" role="alert">
-      <strong>You are not logged in!</strong> Please <a href="{% url 'login' %}">login</a> to access the app.
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="display: none;"></button>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'home' %}">SmartHome</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'devices' %}">All Devices</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'rooms' %}">All Rooms</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'history-dashboard' %}">Logs</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'consumption-dashboard' %}">Measurements</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'logout' %}">Disconnect</a>
+        </li>
+      </ul>
+      <span class="navbar-text">
+        Welcome, {{ user.username }}
+      </span>
     </div>
-  {% endif %}
-
+  </div>
+</nav>
+{% else %}
+<div class="alert alert-warning alert-dismissible fade show fixed-top" role="alert">
+  <strong>You are not logged in!</strong> Please <a href="{% url 'login' %}">login</a> to access the app.
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="display: none;"></button>
+</div>
+{% endif %}
   <div class="container-fluid">
     <div class="row">
       <div class="col-sm-2">

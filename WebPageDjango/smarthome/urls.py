@@ -16,6 +16,7 @@ urlpatterns = [
     path('devices/<int:pk>/delete/', views.DeviceDeleteView.as_view(), name='device-delete'),
     path('rooms/', views.RoomListView.as_view(), name='rooms'),
     path('rooms/<int:pk>/', views.RoomDetailView.as_view(), name='room-detail'),
-    path('history/', views.HistoryDashboardView.as_view(), name='history-dashboard'),
+    path('logs/history/', views.HistoryDashboardView.as_view(), name='history-dashboard'),
+    path('logs/consumption/', views.ConsumptionDashboardView.as_view(), name='consumption-dashboard'),
 
 ]

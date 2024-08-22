@@ -1,4 +1,4 @@
-from .models import Room, Device, History
+from .models import Room, Device, History, Measurement
 from django.conf import settings
 from django.utils import timezone
 from django.db.models import Q
@@ -269,7 +269,7 @@ def logout_view(request):
 
 class HistoryDashboardView(LoginRequiredMixin, ListView):
     model = History
-    template_name = 'history/history_dashboard.html'
+    template_name = 'logs/history/history_dashboard.html'
     context_object_name = 'history_records'
     ordering = ['-updated_at']
 
@@ -293,6 +293,27 @@ class HistoryDashboardView(LoginRequiredMixin, ListView):
         context['table_name'] = self.request.GET.get('table_name', '')
         context['record_id'] = self.request.GET.get('record_id', '')
         context['field_name'] = self.request.GET.get('field_name', '')
+        context['is_logged_in'] = self.request.user.is_authenticated
+        context['user'] = self.request.user
+        return context
+
+class ConsumptionDashboardView(LoginRequiredMixin, ListView):
+    model = Measurement
+    template_name = 'logs/consumption/consumption_dashboard.html'
+    context_object_name = 'consumption_records'
+    ordering = ['-last_updated']
+
+    def get_queryset(self):
+        queryset = Measurement.objects.all()
+        device_name = self.request.GET.get('device_name')
+        if device_name:
+            queryset = queryset.filter(device__name__icontains=device_name)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['device_name'] = self.request.GET.get('device_name', '')
+        context['devices'] = Device.objects.all()
         context['is_logged_in'] = self.request.user.is_authenticated
         context['user'] = self.request.user
         return context
