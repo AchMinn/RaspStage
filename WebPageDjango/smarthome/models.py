@@ -16,46 +16,7 @@ class Room(models.Model):
 
     @property
     def device_count(self):
-        return self.device_set.count()
-
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        super().save(*args, **kwargs)
-        if is_new:
-            History.objects.create(
-                table_name='Room',
-                record_id=self.pk,
-                field_name='all',
-                old_value='',
-                new_value=str(self),
-                updated_at=now(),
-                updated_by=kwargs.get('user', None),
-                message='New room created'
-            )
-        else:
-            History.objects.create(
-                table_name='Room',
-                record_id=self.pk,
-                field_name='all',
-                old_value=str(self),
-                new_value=str(self),
-                updated_at=now(),
-                updated_by=kwargs.get('user', None),
-                message='Room updated'
-            )
-
-    def delete(self, *args, **kwargs):
-        History.objects.create(
-            table_name='Room',
-            record_id=self.pk,
-            field_name='all',
-            old_value=str(self),
-            new_value='',
-            updated_at=now(),
-            updated_by=kwargs.get('user', None),
-            message='Room deleted'
-        )
-        super().delete(*args, **kwargs)
+        return self.devices.count()
 
 class Device(models.Model):
     name = models.CharField(max_length=255)
@@ -73,45 +34,6 @@ class Device(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        super().save(*args, **kwargs)
-        if is_new:
-            History.objects.create(
-                table_name='Device',
-                record_id=self.pk,
-                field_name='all',
-                old_value='',
-                new_value=str(self),
-                updated_at=now(),
-                updated_by=kwargs.get('user', None),
-                message='New device created'
-            )
-        else:
-            History.objects.create(
-                table_name='Device',
-                record_id=self.pk,
-                field_name='all',
-                old_value=str(self),
-                new_value=str(self),
-                updated_at=now(),
-                updated_by=kwargs.get('user', None),
-                message='Device updated'
-            )
-
-    def delete(self, *args, **kwargs):
-        History.objects.create(
-            table_name='Device',
-            record_id=self.pk,
-            field_name='all',
-            old_value=str(self),
-            new_value='',
-            updated_at=now(),
-            updated_by=kwargs.get('user', None),
-            message='Device deleted'
-        )
-        super().delete(*args, **kwargs)
-
 class Sensor(models.Model):
     name = models.CharField(max_length=100)
     sensor_type = models.CharField(max_length=255, default="NAN")
@@ -123,45 +45,6 @@ class Sensor(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        super().save(*args, **kwargs)
-        if is_new:
-            History.objects.create(
-                table_name='Sensor',
-                record_id=self.pk,
-                field_name='all',
-                old_value='',
-                new_value=str(self),
-                updated_at=now(),
-                updated_by=kwargs.get('user', None),
-                message='New sensor created'
-            )
-        else:
-            History.objects.create(
-                table_name='Sensor',
-                record_id=self.pk,
-                field_name='all',
-                old_value=str(self),
-                new_value=str(self),
-                updated_at=now(),
-                updated_by=kwargs.get('user', None),
-                message='Sensor updated'
-            )
-
-    def delete(self, *args, **kwargs):
-        History.objects.create(
-            table_name='Sensor',
-            record_id=self.pk,
-            field_name='all',
-            old_value=str(self),
-            new_value='',
-            updated_at=now(),
-            updated_by=kwargs.get('user', None),
-            message='Sensor deleted'
-        )
-        super().delete(*args, **kwargs)
-
 class Measurement(models.Model):
     name = models.CharField(max_length=100)
     device = models.ForeignKey(Device, on_delete=models.CASCADE)
@@ -170,45 +53,6 @@ class Measurement(models.Model):
 
     def __str__(self):
         return self.name
-
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        super().save(*args, **kwargs)
-        if is_new:
-            History.objects.create(
-                table_name='Measurement',
-                record_id=self.pk,
-                field_name='all',
-                old_value='',
-                new_value=str(self),
-                updated_at=now(),
-                updated_by=kwargs.get('user', None),
-                message='New measurement created'
-            )
-        else:
-            History.objects.create(
-                table_name='Measurement',
-                record_id=self.pk,
-                field_name='all',
-                old_value=str(self),
-                new_value=str(self),
-                updated_at=now(),
-                updated_by=kwargs.get('user', None),
-                message='Measurement updated'
-            )
-
-    def delete(self, *args, **kwargs):
-        History.objects.create(
-            table_name='Measurement',
-            record_id=self.pk,
-            field_name='all',
-            old_value=str(self),
-            new_value='',
-            updated_at=now(),
-            updated_by=kwargs.get('user', None),
-            message='Measurement deleted'
-        )
-        super().delete(*args, **kwargs)
 
 class History(models.Model):
     table_name = models.CharField(max_length=255)

@@ -231,11 +231,13 @@ class RoomDetailView(DetailView):
     context_object_name = 'room'
     template_name = 'rooms/room_detail.html'
     paginate_by = 2
+
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['is_logged_in'] = self.request.user.is_authenticated
-        context['user'] = self.request.user
-        return context
+            context = super().get_context_data(**kwargs)
+            context['is_logged_in'] = self.request.user.is_authenticated
+            context['user'] = self.request.user
+            context['device_count'] = self.object.device_count
+            return context
 
 class RegisterView(CreateView):
     form_class = UserCreationForm
