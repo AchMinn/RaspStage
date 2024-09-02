@@ -20,8 +20,13 @@ class RestrictAccessMiddleware:
         if current_url == 'home':
             return self.get_response(request)
 
-        # Allow access to all pages for admin users
+        # Allow access to all pages for superusers
         if request.user.is_authenticated and request.user.is_superuser:
+            return self.get_response(request)
+
+
+        # Allow access to all pages for staff users
+        if request.user.is_authenticated and request.user.is_staff:
             return self.get_response(request)
 
         # Allow access to certain pages for regular users

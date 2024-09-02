@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.contrib.auth import logout
 from django.views import generic
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, DeleteView, UpdateView
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib.auth import login, authenticate
@@ -110,11 +110,67 @@ class DeviceControlView(DetailView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        # Add your device control logic here
-        # For example, you can update the device's state based on the form data
-        self.object.is_active = not self.object.is_active
-        self.object.save()
-        return self.render_to_response(self.get_context_data())
+        
+        action = request.POST.get('action')
+        intensity = request.POST.get('intensity')
+
+        # Prepare common fields for the History log
+        table_name = 'Device'  # Change this if needed
+        updated_at = timezone.now()
+        updated_by = request.user  # Assuming the user is logged in
+        message = None
+
+        # Control logic based on the action
+        if action == 'turn_on':
+            if not self.object.is_active:  # Log change only if the state is changing
+                self.object.is_active = True
+                self.object.save()
+                message = "Device turned on"
+                History.objects.create(
+                    table_name=table_name,
+                    record_id=self.object.id,
+                    field_name='is_active',
+                    old_value='False',
+                    new_value='True',
+                    updated_at=updated_at,
+                    updated_by=updated_by,
+                    message=message
+                )
+
+        elif action == 'turn_off':
+            if self.object.is_active:  # Log change only if the state is changing
+                self.object.is_active = False
+                self.object.save()
+                message = "Device turned off"
+                History.objects.create(
+                    table_name=table_name,
+                    record_id=self.object.id,
+                    field_name='is_active',
+                    old_value='True',
+                    new_value='False',
+                    updated_at=updated_at,
+                    updated_by=updated_by,
+                    message=message
+                )
+
+        elif action == 'change_intensity' and intensity is not None:
+            # Assuming you want to log intensity changes
+            old_value = str(self.object.intensity) if hasattr(self.object, 'intensity') else 'N/A'
+            self.object.intensity = float(intensity)  # Assuming you have an intensity field
+            self.object.save()
+            History.objects.create(
+                table_name=table_name,
+                record_id=self.object.id,
+                field_name='intensity',
+                old_value=old_value,
+                new_value=intensity,
+                updated_at=updated_at,
+                updated_by=updated_by,
+                message="Intensity changed"
+            )
+        
+        # Redirect back to the control page
+        return redirect('device-control', pk=self.object.id)
 
 class DeviceCreateView(CreateView):
     model = Device

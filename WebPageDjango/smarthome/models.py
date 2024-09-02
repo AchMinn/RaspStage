@@ -30,6 +30,7 @@ class Device(models.Model):
     device_type = models.CharField(max_length=255, choices=[
         ('lampe', 'Lampe'), ('plug', 'Plug')
     ],default="Lampe")
+    intensity = models.IntegerField(null=True, blank=True, default=0)
 
     def __str__(self):
         return self.name

@@ -16,6 +16,7 @@
       <table class="device-list-table table table-striped table-hover">
         <thead>
           <tr>
+            <th>Device ID</th>
             <th>Name</th>
             <th>Description</th>
             <th>Type</th>
@@ -26,6 +27,7 @@
         <tbody>
           {% for device in device_list %}
             <tr>
+              <td>{{ device.id }}</td>
               <td><a href="{% url 'device-detail' device.id %}">{{ device.name }}</a></td>
               <td>{{ device.description }}</td>
               <td>{{ device.get_device_type_display }}</td>

@@ -1,0 +1,16 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h1>Control {{ device.name }}</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <button name="action" value="turn_on">Turn On</button>
+    <button name="action" value="turn_off">Turn Off</button>
+    <label for="intensity">Intensity (0-100):</label>
+    <input type="number" name="intensity" min="0" max="100" step="1">
+    <button name="action" value="change_intensity">Change Intensity</button>
+</form>
+
+<p>Status: {{ device.is_active|yesno:"On,Off" }}</p>
+{% endblock %}
