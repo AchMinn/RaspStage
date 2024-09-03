@@ -1,54 +1,56 @@
 {% extends "base_generic.html" %}
 {% load static %}
 
+
+
 {% block content %}
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <h1>Devices</h1>
-        <div class="d-flex justify-content-end mb-3">
-          <a href="{% url 'device-create' %}" class="btn btn-primary">Add Device</a>
-        </div>
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="text-center">Devices</h1>
+      <div class="d-flex justify-content-end mb-3">
+        <a href="{% url 'device-create' %}" class="btn btn-primary">Add Device</a>
       </div>
     </div>
-
-    {% if device_list %}
-      <table class="device-list-table table table-striped table-hover">
-        <thead>
-          <tr>
-            <th>Device ID</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Type</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for device in device_list %}
-            <tr>
-              <td>{{ device.id }}</td>
-              <td><a href="{% url 'device-detail' device.id %}">{{ device.name }}</a></td>
-              <td>{{ device.description }}</td>
-              <td>{{ device.get_device_type_display }}</td>
-              <td>{% if device.is_active %}Active{% else %}Not Active{% endif %}</td>
-              <td>
-                <a href="{% url 'device-control' device.id %}" class="btn btn-primary btn-sm">Control</a>
-                <a href="{% url 'device-update' device.id %}" class="btn btn-secondary btn-sm">Edit</a>
-                <a href="{% url 'device-delete' device.id %}" class="btn btn-danger btn-sm">Delete</a>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <div class="row">
-        <div class="col-12">
-          <p>No devices found.</p>
-        </div>
-      </div>
-    {% endif %}
   </div>
+
+  {% if device_list %}
+    <table class="device-list-table table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Device ID</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for device in device_list %}
+          <tr>
+            <td>{{ device.id }}</td>
+            <td><a href="{% url 'device-detail' device.id %}">{{ device.name }}</a></td>
+            <td>{{ device.description }}</td>
+            <td>{{ device.get_device_type_display }}</td>
+            <td>{% if device.is_active %}Active{% else %}Not Active{% endif %}</td>
+            <td>
+              <a href="{% url 'device-control' device.id %}" class="btn btn-primary btn-sm">Control</a>
+              <a href="{% url 'device-update' device.id %}" class="btn btn-secondary btn-sm">Edit</a>
+              <a href="{% url 'device-delete' device.id %}" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="row">
+      <div class="col-12">
+        <p class="text-center">No devices found.</p>
+      </div>
+    </div>
+  {% endif %}
+</div>
 {% endblock %}
 
 {% block extrahead %}

@@ -1,58 +1,63 @@
 {% extends 'base_generic.html' %}
+{% load static %}
 
 {% block content %}
+<div class="container mt-4">
+    <h1 class="text-center">History Dashboard</h1>
 
-<h1>History Dashboard</h1>
+    <form class="mb-3" method="get">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="table_name">Table Name</label>
+                    <input type="text" class="form-control" id="table_name" name="table_name" value="{{ table_name }}">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="record_id">Record ID</label>
+                    <input type="number" class="form-control" id="record_id" name="record_id" value="{{ record_id }}">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="field_name">Field Name</label>
+                    <input type="text" class="form-control" id="field_name" name="field_name" value="{{ field_name }}">
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
 
-<form class="mb-3" method="get">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="form-group">
-                <label for="table_name">Table Name</label>
-                <input type="text" class="form-control" id="table_name" name="table_name" value="{{ table_name }}">
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <label for="record_id">Record ID</label>
-                <input type="number" class="form-control" id="record_id" name="record_id" value="{{ record_id }}">
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <label for="field_name">Field Name</label>
-                <input type="text" class="form-control" id="field_name" name="field_name" value="{{ field_name }}">
-            </div>
-        </div>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Table Name</th>
+                    <th>Record ID</th>
+                    <th>Field Name</th>
+                    <th>Old Value</th>
+                    <th>New Value</th>
+                    <th>Updated At</th>
+                    <th>Updated By</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in history_records %}
+                <tr>
+                    <td>{{ record.table_name }}</td>
+                    <td>{{ record.record_id }}</td>
+                    <td>{{ record.field_name }}</td>
+                    <td>{{ record.old_value }}</td>
+                    <td>{{ record.new_value }}</td>
+                    <td>{{ record.updated_at }}</td>
+                    <td>{{ record.updated_by }}</td>
+                    <td>{{ record.message }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-    <button type="submit" class="btn btn-primary">Filter</button>
-</form>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Table Name</th>
-            <th>Record ID</th>
-            <th>Field Name</th>
-            <th>Old Value</th>
-            <th>New Value</th>
-            <th>Updated At</th>
-            <th>Updated By</th>
-            <th>Message</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for record in history_records %}
-        <tr>
-            <td>{{ record.table_name }}</td>
-            <td>{{ record.record_id }}</td>
-            <td>{{ record.field_name }}</td>
-            <td>{{ record.old_value }}</td>
-            <td>{{ record.new_value }}</td>
-            <td>{{ record.updated_at }}</td>
-            <td>{{ record.updated_by }}</td>
-            <td>{{ record.message }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% endblock %}
+</div>
+ {% endblock %}

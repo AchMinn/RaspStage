@@ -1,13 +1,9 @@
 from django.contrib import admin
-from .models import Room, Device, Sensor, Measurement, User
+from .models import Room, Device, Measurement, User
 from django.contrib.auth.admin import UserAdmin
 
 class DeviceInline(admin.TabularInline):
     model = Device
-    extra = 0
-
-class SensorInline(admin.TabularInline):
-    model = Sensor
     extra = 0
 
 class MeasurementInline(admin.TabularInline):
@@ -17,7 +13,7 @@ class MeasurementInline(admin.TabularInline):
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')
-    inlines = [DeviceInline, SensorInline]
+    inlines = [DeviceInline]
 
 @admin.register(Device)
 class DeviceAdmin(admin.ModelAdmin):
@@ -25,12 +21,6 @@ class DeviceAdmin(admin.ModelAdmin):
     list_filter = ('room', 'is_active')
     search_fields = ('name', 'description')
     inlines = [MeasurementInline]
-
-@admin.register(Sensor)
-class SensorAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'room', 'value', 'last_updated')
-    list_filter = ('room',)
-    search_fields = ('name', 'description')
 
 @admin.register(Measurement)
 class MeasurementAdmin(admin.ModelAdmin):

@@ -1,16 +1,25 @@
 {% extends "base_generic.html" %}
+{% load static %}
 
 {% block content %}
-<h1>Control {{ device.name }}</h1>
+<div class="container mt-4">
+    <h1 class="text-center">Control {{ device.name }}</h1>
 
-<form method="post">
-    {% csrf_token %}
-    <button name="action" value="turn_on">Turn On</button>
-    <button name="action" value="turn_off">Turn Off</button>
-    <label for="intensity">Intensity (0-100):</label>
-    <input type="number" name="intensity" min="0" max="100" step="1">
-    <button name="action" value="change_intensity">Change Intensity</button>
-</form>
+    <form method="post" class="text-center mt-4">
+        {% csrf_token %}
+        <div class="btn-group mb-3" role="group" aria-label="Device Controls">
+            <button type="submit" name="action" value="turn_on" class="btn btn-success">Turn On</button>
+            <button type="submit" name="action" value="turn_off" class="btn btn-danger">Turn Off</button>
+        </div>
 
-<p>Status: {{ device.is_active|yesno:"On,Off" }}</p>
+        <div class="mb-3">
+            <label for="intensity" class="form-label">Intensity (0-100):</label>
+            <input type="number" name="intensity" id="intensity" class="form-control" min="0" max="100" step="1" placeholder="Set intensity">
+        </div>
+
+        <button type="submit" name="action" value="change_intensity" class="btn btn-primary">Change Intensity</button>
+    </form>
+
+    <p class="text-center mt-4"><strong>Status:</strong> {{ device.is_active|yesno:"On,Off" }}</p>
+</div>
 {% endblock %}

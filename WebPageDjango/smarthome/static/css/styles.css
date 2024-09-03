@@ -1,75 +1,142 @@
-.sidebar-nav {
-  margin-top: 20px;
-  padding: 0;
-  list-style: none;
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa; /* Light background for better visibility */
 }
+
+h1 {
+    color: #343a40; /* Darker color for headings */
+}
+
+/* Button Styles */
+.btn {
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn:hover {
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+/* Form Styles */
+.form-label {
+    font-weight: bold; /* Bold label for better visibility */
+}
+
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+    width: 100%; /* Full-width input */
+}
+
+/* Container Styles */
+.container {
+    max-width: 600px; /* Adjusted for better responsiveness */
+    margin: 0 auto; /* Center the container */
+    padding: 20px; /* Padding for spacing */
+}
+
+/* Additional Styles for Lists and Tables */
+.sidebar-nav {
+    margin-top: 20px;
+    padding: 0;
+    list-style: none;
+}
+
 .device-list-table {
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid #ddd;
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
 }
 
 .device-list-table th,
 .device-list-table td {
-  padding: 8px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
 }
 
 .device-list-table th {
-  background-color: #f2f2f2;
+    background-color: #f2f2f2;
 }
 
 .device-list-table tr:hover {
-  background-color: #f5f5f5;
-}
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+    background-color: #f5f5f5;
 }
 
+/* Device Details */
 .device-details {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 30px;
-}
-
-.device-info {
-  flex: 1;
-  margin-right: 30px;
-}
-
-.device-info h2 {
-  margin-top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
 }
 
 .device-image {
-  flex-shrink: 0;
-  width: 300px;
-  height: 300px;
-  overflow: hidden;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    width: 300px;
+    height: 300px;
+    overflow: initial;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .device-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+    width: 100%;
+    height:
+
+.container {
+  max-width: 600px; /* Adjusted for better responsiveness */
 }
 
-.device-description,
-.device-specifications {
-  margin-bottom: 30px;
+.btn-group .btn {
+  margin-right: 10px; /* Space between buttons */
 }
 
-.device-actions {
-  display: flex;
-  justify-content: flex-end;
+.btn {
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn:hover {
+  transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.form-label {
+  font-weight: bold; /* Bold label for better visibility */
+}
+
+/* Device Image Styles */
+.device-image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Control Button Styles */
+.device-control-button {
+    margin-top: 1rem;
 }
 
 .device-actions a {
-  margin-left: 10px;
+    margin: 0 10px; /* Space between action buttons */
+}
+
+/* Device List Table Styles */
+.device-list-table {
+    margin-top: 20px; /* Space above the table */
+}
+
+/* Button Styles for Actions */
+.device-list-table .btn {
+    margin-right: 5px; /* Space between action buttons */
+}
+
+.device-control-button .btn {
+    background-color: #007bff; /* Your desired button color */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+}
+
+.device-control-button .btn:hover {
+    background-color: #0056b3; /* Darker shade on hover */
 }

@@ -2,68 +2,46 @@
 {% load static %}
 
 {% block content %}
-<style>
-.device-image {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+<div class="container mt-4">
+  <h1 class="text-center">Device Details</h1>
 
-.device-control-button {
-  margin-top: 1rem;
-}
-
-.device-control-button .btn {
-  display: block;
-  width: 100%;
-}
-</style>
-<div class="container">
-  <h1>Device Details</h1>
-
-  <div class="device-details">
+  <div class="device-details d-flex flex-column flex-md-row justify-content-between mt-4">
     <div class="device-info">
       <h2>{{ device.name }}</h2>
-      <p>Model: {{ device.model }}</p>
-      <p>Manufacturer: {{ device.manufacturer }}</p>
-      <p>Firmware: {{ device.firmware }}</p>
-      <p>Serial Number: {{ device.serial_number }}</p>
-      <p>Status: {% if device.is_active %}Active{% else %}Not Active{% endif %}</p>
-      <p>Room: {{ device.room }} </p>
-      <p>Device Type: {{ device.get_device_type_display }}</p>
+      <p><strong>Model:</strong> {{ device.model }}</p>
+      <p><strong>Serial Number:</strong> {{ device.serial_number }}</p>
+      <p><strong>Status:</strong> {% if device.is_active %}Active{% else %}Not Active{% endif %}</p>
+      <p><strong>Room:</strong> {{ device.room }}</p>
+      <p><strong>Device Type:</strong> {{ device.get_device_type_display }}</p>
     </div>
 
-    <div class="device-image">
+    <div class="device-image text-center">
       {% if device.image %}
-        <img src="{{ device.image.url }}" alt="{{ device.name }} Image">
+        <img src="{{ device.image.url }}" alt="{{ device.name }} Image" class="img-fluid">
       {% else %}
-        <img src="{% static 'images/default_device.svg' %}" alt="Default Device Image">
+        <img src="{% static 'images/default_device.svg' %}" alt="Default Device Image" class="img-fluid">
       {% endif %}
-      <div class="device-control-button">
+      <div class="device-control-button mt-3">
         <a href="{% url 'device-control' device.pk %}" class="btn btn-primary">Control Device</a>
       </div>
     </div>
   </div>
 
-  <div class="device-description">
+  <div class="device-description mt-4">
     <h3>Description</h3>
     <p>{{ device.description }}</p>
   </div>
 
-  <div class="device-specifications">
+  <div class="device-specifications mt-4">
     <h3>Specifications</h3>
     <ul>
-      <li>Created : {{ device.last_connected|date:'Y-m-d H:i:s' }}</li>
+      <li>Created: {{ device.last_connected|date:'Y-m-d H:i:s' }}</li>
     </ul>
   </div>
 
-  <div class="device-actions">
+  <div class="device-actions mt-4 text-center">
     <a href="{% url 'device-update' device.pk %}" class="btn btn-primary">Edit Device</a>
     <a href="{% url 'device-delete' device.pk %}" class="btn btn-danger">Delete Device</a>
   </div>
 </div>
-{% endblock %}
-
-{% block extrahead %}
-  <link rel="stylesheet" href="{% static 'css/device_detail.css' %}">
 {% endblock %}

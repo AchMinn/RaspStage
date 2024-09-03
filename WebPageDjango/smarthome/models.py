@@ -22,29 +22,17 @@ class Device(models.Model):
     name = models.CharField(max_length=255)
     model = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
-    manufacturer = models.CharField(max_length=255, default="NAN")
-    firmware = models.CharField(max_length=255, default="NAN")
     last_connected = models.DateTimeField(default=timezone.now)
     room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, related_name='devices')
     is_active = models.BooleanField(default=False)
     device_type = models.CharField(max_length=255, choices=[
-        ('lampe', 'Lampe'), ('plug', 'Plug')
+        ('lampe', 'Lampe'), ('plug', 'Plug'), ('clima', 'Clima')
     ],default="Lampe")
     intensity = models.IntegerField(null=True, blank=True, default=0)
 
     def __str__(self):
         return self.name
 
-class Sensor(models.Model):
-    name = models.CharField(max_length=100)
-    sensor_type = models.CharField(max_length=255, default="NAN")
-    description = models.TextField(null=True, blank=True)
-    room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, related_name='sensors')
-    value = models.FloatField(default=0)
-    last_updated = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
 
 class Measurement(models.Model):
     name = models.CharField(max_length=100)

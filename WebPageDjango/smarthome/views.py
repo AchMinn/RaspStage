@@ -175,7 +175,7 @@ class DeviceControlView(DetailView):
 class DeviceCreateView(CreateView):
     model = Device
     template_name = 'devices/device_create.html'
-    fields = ['name', 'model', 'description', 'manufacturer', 'firmware', 'room', 'is_active', 'device_type']
+    fields = ['name', 'model', 'description', 'room', 'is_active', 'device_type']
     success_url = reverse_lazy('devices')
     permission_required = 'devices.create_device'
 
@@ -208,7 +208,7 @@ class DeviceCreateView(CreateView):
 class DeviceUpdateView(UpdateView):
     model = Device
     template_name = 'devices/device_update.html'
-    fields = ['name', 'model', 'description', 'manufacturer', 'firmware', 'room', 'device_type']
+    fields = ['name', 'model', 'description', 'room', 'device_type']
     success_url = reverse_lazy('devices')
 
     def form_valid(self, form):
@@ -330,9 +330,10 @@ class HistoryDashboardView(LoginRequiredMixin, ListView):
     template_name = 'logs/history/history_dashboard.html'
     context_object_name = 'history_records'
     ordering = ['-updated_at']
+    paginate_by = 10
 
     def get_queryset(self):
-        queryset = History.objects.all()
+        queryset = History.objects.all().order_by('-updated_at')  # Ensure proper ordering
         table_name = self.request.GET.get('table_name')
         record_id = self.request.GET.get('record_id')
         field_name = self.request.GET.get('field_name')
@@ -360,6 +361,7 @@ class ConsumptionDashboardView(LoginRequiredMixin, ListView):
     template_name = 'logs/consumption/consumption_dashboard.html'
     context_object_name = 'consumption_records'
     ordering = ['-last_updated']
+    paginate_by = 10
 
     def get_queryset(self):
         queryset = Measurement.objects.all()
