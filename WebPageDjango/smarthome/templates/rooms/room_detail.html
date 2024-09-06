@@ -19,11 +19,17 @@
         <strong>Number of Devices:</strong> {{ device_count }}
       </p>
       <p>
-        <strong>Created:</strong> {{ room.created_at|date:"M d, Y" }}
+        <strong>Devices in this Room:</strong>
       </p>
-      <p>
-        <strong>Updated:</strong> {{ room.updated_at|date:"M d, Y" }}
-      </p>
+      <ul>
+        {% for device in devices %}
+          <li>
+            <a href="{% url 'device-detail' device.id %}">{{ device.name }}</a>
+          </li>
+        {% empty %}
+          <li>No devices found.</li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
 </div>

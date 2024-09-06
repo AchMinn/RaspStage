@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.db import IntegrityError
+from django.db import IntegrityError, models
 
 def home_view(request):
     """View function for the home page of the smart home application."""
@@ -214,24 +214,39 @@ class DeviceUpdateView(UpdateView):
     def form_valid(self, form):
         # Get the original device instance
         original_device = self.get_object()
-
+        
         # Set the updated_by field
         form.instance.updated_by = self.request.user
 
         # Save the updated device
         response = super().form_valid(form)
 
-        # Create the History record
-        History.objects.create(
-            table_name='devices',
-            record_id=form.instance.id,
-            field_name='',
-            old_value=str(original_device),
-            new_value=str(form.instance),
-            updated_at=timezone.now(),
-            updated_by=self.request.user,
-            message=f'Device "{original_device.name}" was updated.'
-        )
+        # Create History records for changed fields
+        changed_fields = []
+        for field in form.changed_data:
+            old_value = getattr(original_device, field)
+            new_value = getattr(form.instance, field)
+            if old_value != new_value:
+                changed_fields.append((field, old_value, new_value))
+
+                # Create individual History record for each changed field
+                History.objects.create(
+                    table_name='devices',
+                    record_id=form.instance.id,
+                    field_name=field,
+                    old_value=str(old_value),
+                    new_value=str(new_value),
+                    updated_at=timezone.now(),
+                    updated_by=self.request.user,
+                    message=f'Device "{original_device.name}" was updated. Changes: {changed_fields}"'
+                )
+
+        # Optional: You can log a summary message if needed
+        if changed_fields:
+            summary_message = f'Device "{original_device.name}" was updated. Changes: {changed_fields}'
+            # Log or handle summary_message as necessary
+
+        return response
 
         return response
     def get_context_data(self, **kwargs):
@@ -286,14 +301,14 @@ class RoomDetailView(DetailView):
     model = Room
     context_object_name = 'room'
     template_name = 'rooms/room_detail.html'
-    paginate_by = 2
 
     def get_context_data(self, **kwargs):
-            context = super().get_context_data(**kwargs)
-            context['is_logged_in'] = self.request.user.is_authenticated
-            context['user'] = self.request.user
-            context['device_count'] = self.object.device_count
-            return context
+        context = super().get_context_data(**kwargs)
+        context['is_logged_in'] = self.request.user.is_authenticated
+        context['user'] = self.request.user
+        context['device_count'] = self.object.device_count
+        context['devices'] = self.object.devices.all()  # Fetch all devices for the room
+        return context
 
 class RegisterView(CreateView):
     form_class = UserCreationForm

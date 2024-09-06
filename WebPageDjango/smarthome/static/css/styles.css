@@ -83,8 +83,8 @@ select {
 
 .device-image img {
     width: 100%;
-    height:
-
+    height:auto
+}
 .container {
   max-width: 600px; /* Adjusted for better responsiveness */
 }
@@ -139,4 +139,26 @@ select {
 
 .device-control-button .btn:hover {
     background-color: #0056b3; /* Darker shade on hover */
+}
+
+.room-title {
+    text-align: center; /* Center the title */
+}
+
+.room-image {
+    width: 80%; /* Reduce image size to 80% of its container */
+    max-width: 300px; /* Set a maximum width */
+    height: auto; /* Maintain aspect ratio */
+    display: block; /* Make it a block element for centering */
+    margin: 0 auto; /* Center the image horizontally */
+}
+
+.image-caption {
+    text-align: center; /* Center the text under the image */
+    font-size: 1.2em; /* Increase font size */
+    margin-top: 10px; /* Space between image and caption */
+}
+
+.room-description {
+    font-size: 1em; /* Adjust description font size if needed */
 }
