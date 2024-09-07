@@ -1,3 +1,4 @@
+from django.http import HttpResponseRedirect
 from .models import Room, Device, History, Measurement
 from django.conf import settings
 from django.utils import timezone
