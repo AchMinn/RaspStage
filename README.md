@@ -26,7 +26,7 @@
    git clone https://github.com/yourusername/smarthome-dashboard.git
    cd smarthome-dashboard
  
-2. **Create a Virtual Environment**
+2. **Create a Virtual Environment (if needed)**
 
 	```bash
 	python -m venv venv
