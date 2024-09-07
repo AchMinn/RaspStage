@@ -58,9 +58,10 @@ Access the application at http://127.0.0.1:8000/.
 
 ## Usage
 
-- **Access the Dashboard**: Navigate to the dashboard page at `/consumption/` to view device consumption data.
-- **Filter Data**: Use the date range inputs to filter records by the `last_updated` timestamp.
+- **Access the Dashboard**: Navigate to the dashboard page at `/measurements/` to view device consumption data.
+- **Filter Data**: Use the range inputs to filter records.
 - **View Charts**: Interactive charts will update based on the selected date range and display consumption statistics.
+- **Add, control and edit Devices**: Create new devices or/and control the already existing devices in the smarthome.
 
 ## Models
 
@@ -95,7 +96,7 @@ Logs measurements from devices.
 
 ### History
 
-Tracks changes made to devices and measurements.
+Tracks changes in your smarthome web app.
 
 - `table_name`: Name of the table where the change occurred.
 - `record_id`: ID of the changed record.
@@ -118,6 +119,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 For questions or feedback, please contact:
 
-- **Email**: youremail@example.com
-- **GitHub**: [yourusername](https://github.com/yourusername)
+- **Email**: achraf.elminor@e-polytechnique.ma
+- **GitHub**: [AchMinn](https://github.com/AchMinn)
 
