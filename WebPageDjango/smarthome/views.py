@@ -1,7 +1,7 @@
 from .models import Room, Device, History, Measurement
 from django.conf import settings
 from django.utils import timezone
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.contrib.auth import logout
 from django.views import generic
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, DeleteView, UpdateView
@@ -14,6 +14,8 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError, models
+from django.utils.dateparse import parse_date
+
 
 def home_view(request):
     """View function for the home page of the smart home application."""
@@ -337,7 +339,7 @@ class GuestView(TemplateView):
 
 def logout_view(request):
     logout(request)
-    return redirect('login')  # Replace 'login_url' with the name of your login URL
+    return redirect('login')  
 
 
 class HistoryDashboardView(LoginRequiredMixin, ListView):
@@ -349,9 +351,12 @@ class HistoryDashboardView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = History.objects.all().order_by('-updated_at')  # Ensure proper ordering
+        
         table_name = self.request.GET.get('table_name')
         record_id = self.request.GET.get('record_id')
         field_name = self.request.GET.get('field_name')
+        updated_at = self.request.GET.get('updated_at')
+
 
         if table_name:
             queryset = queryset.filter(table_name__icontains=table_name)
@@ -359,6 +364,8 @@ class HistoryDashboardView(LoginRequiredMixin, ListView):
             queryset = queryset.filter(record_id=record_id)
         if field_name:
             queryset = queryset.filter(field_name__icontains=field_name)
+        if updated_at:
+            queryset = queryset.filter(updated_at__date=updated_at)
 
         return queryset
 
@@ -367,6 +374,7 @@ class HistoryDashboardView(LoginRequiredMixin, ListView):
         context['table_name'] = self.request.GET.get('table_name', '')
         context['record_id'] = self.request.GET.get('record_id', '')
         context['field_name'] = self.request.GET.get('field_name', '')
+        context['updated_at'] = self.request.GET.get('updated_at', '')  
         context['is_logged_in'] = self.request.user.is_authenticated
         context['user'] = self.request.user
         return context
@@ -380,15 +388,44 @@ class ConsumptionDashboardView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = Measurement.objects.all()
-        device_name = self.request.GET.get('device_name')
-        if device_name:
-            queryset = queryset.filter(device__name__icontains=device_name)
+        start_date = self.request.GET.get('start_date')
+        end_date = self.request.GET.get('end_date')
+
+        if start_date:
+            start_date = parse_date(start_date)
+            if start_date:
+                queryset = queryset.filter(last_updated__gte=start_date)
+                
+        if end_date:
+            end_date = parse_date(end_date)
+            if end_date:
+                queryset = queryset.filter(last_updated__lte=end_date)
+
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['device_name'] = self.request.GET.get('device_name', '')
+        start_date = self.request.GET.get('start_date', '')
+        end_date = self.request.GET.get('end_date', '')
+
+        context['start_date'] = start_date
+        context['end_date'] = end_date
         context['devices'] = Device.objects.all()
         context['is_logged_in'] = self.request.user.is_authenticated
         context['user'] = self.request.user
+
+        # Fetch consumption records
+        consumption_records = self.get_queryset()
+        context['consumption_records'] = consumption_records
+
+        # Aggregate consumption by device type
+        device_types = Device.objects.values_list('device_type', flat=True).distinct()
+        consumption_by_device_type = {
+            device_type: consumption_records.filter(device__device_type=device_type).aggregate(total=Sum('value'))['total'] or 0
+            for device_type in device_types
+        }
+
+        context['device_types'] = list(device_types)
+        context['consumption_by_device_type'] = [consumption_by_device_type.get(device_type, 0) for device_type in device_types]
+
         return context

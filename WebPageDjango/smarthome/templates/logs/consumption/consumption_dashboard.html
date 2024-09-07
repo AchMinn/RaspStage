@@ -11,13 +11,28 @@
 
   <form class="form-inline mb-3 justify-content-center">
     <div class="form-group mr-2">
-      <label for="device-name" class="sr-only">Device Name:</label>
-      <input type="text" class="form-control" id="device-name" name="device_name" placeholder="Device Name" value="{{ device_name }}">
+      <label for="start-date" class="sr-only">Start Date:</label>
+      <input type="date" class="form-control" id="start-date" name="start_date" placeholder="Start Date" value="{{ start_date }}">
     </div>
-    <button type="submit" class="btn btn-primary">Filter</button>
+    <div class="form-group mr-2">
+      <label for="end-date" class="sr-only">End Date:</label>
+      <input type="date" class="form-control" id="end-date" name="end_date" placeholder="End Date" value="{{ end_date }}">
+    </div>
+    <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Filter</button>
   </form>
 
-  <div class="table-responsive">
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <h3>Consumption by Device</h3>
+      <canvas id="deviceConsumptionChart"></canvas>
+    </div>
+    <div class="col-md-6">
+      <h3>Consumption by Device Type</h3>
+      <canvas id="deviceTypeConsumptionChart"></canvas>
+    </div>
+  </div>
+
+  <div class="table-responsive mt-4">
     <table class="table table-striped">
       <thead>
         <tr>
@@ -37,7 +52,64 @@
       </tbody>
     </table>
   </div>
-
-  
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Data for consumption per device
+  const deviceConsumptionData = {
+    labels: [{% for record in consumption_records %}'{{ record.device.name }}',{% endfor %} ''],
+    datasets: [{
+      label: 'Consumption per Device',
+      data: [{% for record in consumption_records %}{{ record.value }},{% endfor %} 0],
+      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+      borderColor: 'rgba(75, 192, 192, 1)',
+      borderWidth: 1
+    }]
+  };
+
+  // Data for consumption by device type
+  const deviceTypeConsumptionData = {
+    labels: [{% for device_type in device_types %}'{{ device_type }}',{% endfor %} ''],
+    datasets: [{
+      label: 'Consumption by Device Type',
+      data: [{% for value in consumption_by_device_type %}{{ value }},{% endfor %}],
+      backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)'], // Adjust as needed
+      borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)'], // Adjust as needed
+      borderWidth: 1
+    }]
+  };
+
+  // Create the consumption per device chart
+  const deviceConsumptionChart = new Chart(document.getElementById('deviceConsumptionChart'), {
+    type: 'bar',
+    data: deviceConsumptionData,
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  // Create the consumption by device type chart
+  const deviceTypeConsumptionChart = new Chart(document.getElementById('deviceTypeConsumptionChart'), {
+    type: 'pie',
+    data: deviceTypeConsumptionData,
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: 'Consumption by Device Type'
+        }
+      }
+    }
+  });
+</script>
+
 {% endblock %}

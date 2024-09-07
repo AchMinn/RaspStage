@@ -25,8 +25,14 @@
                     <input type="text" class="form-control" id="field_name" name="field_name" value="{{ field_name }}">
                 </div>
             </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="updated_at">Updated At</label>
+                    <input type="date" class="form-control" id="updated_at" name="updated_at" value="{{ updated_at }}">
+                </div>
+            </div>
         </div>
-        <button type="submit" class="btn btn-primary">Filter</button>
+        <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Filter</button>
     </form>
 
     <div class="table-responsive">
