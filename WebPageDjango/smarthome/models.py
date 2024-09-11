@@ -27,12 +27,34 @@ class Device(models.Model):
     is_active = models.BooleanField(default=False)
     device_type = models.CharField(max_length=255, choices=[
         ('lampe', 'Lampe'), ('plug', 'Plug'), ('clima', 'Clima')
-    ],default="Lampe")
+    ], default='lampe')
     intensity = models.IntegerField(null=True, blank=True, default=0)
+    temperature = models.FloatField(null=True, blank=True)
 
+    def save(self, *args, **kwargs):
+        # Check if the device is being created
+        if self.pk is None:  # Only create outlets for new devices
+            super().save(*args, **kwargs)  # Save the device first to get its ID
+            if self.device_type == 'plug':
+                for i in range(1, 5):  # Create 4 outlets
+                    Outlet.objects.create(device=self, outlet_number=i)
+        else:
+            super().save(*args, **kwargs)  # Save again if needed
+            
     def __str__(self):
         return self.name
 
+
+class Outlet(models.Model):
+    device = models.ForeignKey(Device, related_name='outlets', on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=False)
+    outlet_number = models.PositiveIntegerField()
+
+    class Meta:
+        unique_together = ('device', 'outlet_number')
+
+    def __str__(self):
+        return f"Outlet {self.outlet_number} on {self.device.name}"
 
 class Measurement(models.Model):
     name = models.CharField(max_length=100)

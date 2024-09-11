@@ -1,5 +1,5 @@
 from django.http import HttpResponseRedirect
-from .models import Room, Device, History, Measurement
+from .models import Room, Device, History, Measurement, Outlet
 from django.conf import settings
 from django.utils import timezone
 from django.db.models import Q, Sum
@@ -109,26 +109,25 @@ class DeviceControlView(DetailView):
         context = super().get_context_data(**kwargs)
         context['is_logged_in'] = self.request.user.is_authenticated
         context['user'] = self.request.user
+        context['consumption_records'] = self.object.measurement_set.all()
         return context
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        
         action = request.POST.get('action')
         intensity = request.POST.get('intensity')
+        temperature = request.POST.get('temperature')
 
         # Prepare common fields for the History log
-        table_name = 'Device'  # Change this if needed
+        table_name = 'Device'
         updated_at = timezone.now()
-        updated_by = request.user  # Assuming the user is logged in
-        message = None
+        updated_by = request.user
 
         # Control logic based on the action
         if action == 'turn_on':
-            if not self.object.is_active:  # Log change only if the state is changing
+            if not self.object.is_active:
                 self.object.is_active = True
                 self.object.save()
-                message = "Device turned on"
                 History.objects.create(
                     table_name=table_name,
                     record_id=self.object.id,
@@ -137,14 +136,13 @@ class DeviceControlView(DetailView):
                     new_value='True',
                     updated_at=updated_at,
                     updated_by=updated_by,
-                    message=message
+                    message="Device turned on"
                 )
 
         elif action == 'turn_off':
-            if self.object.is_active:  # Log change only if the state is changing
+            if self.object.is_active:
                 self.object.is_active = False
                 self.object.save()
-                message = "Device turned off"
                 History.objects.create(
                     table_name=table_name,
                     record_id=self.object.id,
@@ -153,13 +151,46 @@ class DeviceControlView(DetailView):
                     new_value='False',
                     updated_at=updated_at,
                     updated_by=updated_by,
-                    message=message
+                    message="Device turned off"
+                )
+
+        elif action.startswith('turn_on_outlet_'):
+            outlet_id = action.split('_')[-1]
+            outlet = get_object_or_404(Outlet, id=outlet_id, device=self.object)
+            if not outlet.is_active:
+                outlet.is_active = True
+                outlet.save()
+                History.objects.create(
+                    table_name=table_name,
+                    record_id=outlet.id,
+                    field_name='is_active',
+                    old_value='False',
+                    new_value='True',
+                    updated_at=updated_at,
+                    updated_by=updated_by,
+                    message=f"Outlet {outlet_id} turned on on device '{self.object.name}'"
+                )
+
+        elif action.startswith('turn_off_outlet_'):
+            outlet_id = action.split('_')[-1]
+            outlet = get_object_or_404(Outlet, id=outlet_id, device=self.object)
+            if outlet.is_active:
+                outlet.is_active = False
+                outlet.save()
+                History.objects.create(
+                    table_name=table_name,
+                    record_id=outlet.id,
+                    field_name='is_active',
+                    old_value='True',
+                    new_value='False',
+                    updated_at=updated_at,
+                    updated_by=updated_by,
+                    message=f"Outlet {outlet_id} turned off on device '{self.object.name}'"
                 )
 
         elif action == 'change_intensity' and intensity is not None:
-            # Assuming you want to log intensity changes
             old_value = str(self.object.intensity) if hasattr(self.object, 'intensity') else 'N/A'
-            self.object.intensity = float(intensity)  # Assuming you have an intensity field
+            self.object.intensity = float(intensity)
             self.object.save()
             History.objects.create(
                 table_name=table_name,
@@ -169,10 +200,29 @@ class DeviceControlView(DetailView):
                 new_value=intensity,
                 updated_at=updated_at,
                 updated_by=updated_by,
-                message="Intensity changed"
+                message=f"Intensity changed on device '{self.object.name}'"
             )
-        
-        # Redirect back to the control page
+
+        elif action == 'set_temperature' and temperature is not None and self.object.device_type == 'clima':
+                    # Validate and set the temperature
+                    try:
+                        temperature = float(temperature)  # Convert to float
+                        old_value = str(self.object.temperature) if hasattr(self.object, 'temperature') else 'N/A'
+                        self.object.temperature = temperature  # Assuming you have a temperature field in your model
+                        self.object.save()
+                        History.objects.create(
+                            table_name=table_name,
+                            record_id=self.object.id,
+                            field_name='temperature',
+                            old_value=old_value,
+                            new_value=str(temperature),
+                            updated_at=updated_at,
+                            updated_by=updated_by,
+                            message=f"Temperature for device '{self.object.name}' set to {temperature}°C"
+                        )
+                    except ValueError:
+                        # Handle invalid temperature input
+                        pass  # You might want to add logging or user feedback here
         return redirect('device-control', pk=self.object.id)
 
 class DeviceCreateView(CreateView):

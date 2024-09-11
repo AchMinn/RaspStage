@@ -5,6 +5,7 @@
 <div class="container mt-4">
     <h1 class="text-center">Control {{ device.name }}</h1>
 
+    {% if device.device_type == 'lampe' %}
     <form method="post" class="text-center mt-4">
         {% csrf_token %}
         <div class="btn-group mb-3" role="group" aria-label="Device Controls">
@@ -20,6 +21,51 @@
         <button type="submit" name="action" value="change_intensity" class="btn btn-primary">Change Intensity</button>
     </form>
 
+    {% elif device.device_type == 'plug' %}
+    <h4 class="text-center">Control Outlets</h4>
+    <form method="post" class="text-center mt-4">
+        {% csrf_token %}
+        {% for outlet in device.outlets.all %}
+            <div class="mb-2">
+                <strong>Outlet {{ outlet.outlet_number }}</strong>
+                <div class="btn-group" role="group">
+                    <button type="submit" name="action" value="turn_on_outlet_{{ outlet.id }}" class="btn btn-success">Turn On</button>
+                    <button type="submit" name="action" value="turn_off_outlet_{{ outlet.id }}" class="btn btn-danger">Turn Off</button>
+                </div>
+            </div>
+        {% empty %}
+            <p>No outlets available for this device.</p>
+        {% endfor %}
+    </form>
+
+    {% elif device.device_type == 'clima' %}
+    <form method="post" class="text-center mt-4">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="temperature" class="form-label">Set Temperature (°C):</label>
+            <input type="number" name="temperature" id="temperature" class="form-control" min="16" max="30" step="1" placeholder="Set temperature">
+        </div>
+
+        <div class="btn-group mb-3" role="group" aria-label="Device Controls">
+            <button type="submit" name="action" value="turn_on" class="btn btn-success">Turn On</button>
+            <button type="submit" name="action" value="turn_off" class="btn btn-danger">Turn Off</button>
+        </div>
+
+        <button type="submit" name="action" value="set_temperature" class="btn btn-primary">Set Temperature</button>
+    </form>
+    {% endif %}
+
     <p class="text-center mt-4"><strong>Status:</strong> {{ device.is_active|yesno:"On,Off" }}</p>
+    
+    <h4 class="text-center mt-4">Consumption Records</h4>
+    <ul class="list-group">
+        {% for record in device.measurement_set.all %}
+            <li class="list-group-item">
+                {{ record.last_updated }}: {{ record.value }} kWh
+            </li>
+        {% empty %}
+            <li class="list-group-item">No consumption records available.</li>
+        {% endfor %}
+    </ul>
 </div>
 {% endblock %}
