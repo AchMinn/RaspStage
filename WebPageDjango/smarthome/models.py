@@ -29,7 +29,7 @@ class Device(models.Model):
         ('lampe', 'Lampe'), ('plug', 'Plug'), ('clima', 'Clima')
     ], default='lampe')
     intensity = models.IntegerField(null=True, blank=True, default=0)
-    temperature = models.FloatField(null=True, blank=True)
+    temperature = models.FloatField(null=True, blank=True, default=0)
 
     def save(self, *args, **kwargs):
         # Check if the device is being created
