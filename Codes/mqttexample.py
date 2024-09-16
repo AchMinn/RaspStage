@@ -1,25 +1,81 @@
-# This code will be on the computer receiving a messafe from the raspberry
-
 import paho.mqtt.client as mqtt
 
-def on_connect(client, userdata, flags, rc):
-	channel = "channel"
-	client.subscribe(channel)
-	print(f"Connected to channel '{channel}' with result code : {rc}")
+# Callback function to handle incoming messages
+def on_message(client, userdata, message):
+    msg = message.payload.decode()
+    topic = message.topic
+    print(f"Message received on topic '{topic}': {msg}")
 
-def on_message(client, userdata, msg):
-	print(f"Received message on topic {msg.topic}:{msg.payload}")
- 	
- 	# Add command handling logic here
- 	
+    if "turned on" in msg:
+        # Handle regular device turn on
+        if "Device" in msg:
+            device_name = msg.split(" ")[1]  # Extract device name
+            print(f"Turning on Device: {device_name}")
+            # Code to turn on the device
 
+        # Handle outlet turn on
+        elif "Outlet" in msg:
+            outlet_info = msg.split(" ")
+            outlet_id = outlet_info[1]
+            device_name = outlet_info[5].strip("'")  # Extract device name
+            print(f"Turning on Outlet: {outlet_id} on Device: {device_name}")
+            # Code to turn on the outlet
+
+    elif "turned off" in msg:
+        # Handle regular device turn off
+        if "Device" in msg:
+            device_name = msg.split(" ")[1]  # Extract device name
+            print(f"Turning off Device: {device_name}")
+            # Code to turn off the device
+
+        # Handle outlet turn off
+        elif "Outlet" in msg:
+            outlet_info = msg.split(" ")
+            outlet_id = outlet_info[1]
+            device_name = outlet_info[5].strip("'")  # Extract device name
+            print(f"Turning off Outlet: {outlet_id} on Device: {device_name}")
+            # Code to turn off the outlet
+
+    elif "changed to" in msg:
+        # Handle intensity change
+        if "Intensity" in msg:
+            device_name = msg.split("'")[1]  # Extract device name
+            intensity = msg.split(" ")[-1]  # Extract intensity value
+            print(f"Setting Intensity for Device: {device_name} to {intensity}")
+            # Code to change the intensity
+
+    elif "set to" in msg:
+        # Handle temperature setting
+        if "Temperature" in msg:
+            device_name = msg.split("'")[1]  # Extract device name
+            temperature = msg.split(" ")[-2]  # Extract temperature value
+            print(f"Setting Temperature for Device: {device_name} to {temperature}°C")
+            # Code to set the temperature
+
+# MQTT configuration
+MQTT_BROKER = 'localhost'
+MQTT_PORT = 1883
+
+# List of topics to subscribe to
+topics = [
+    'home/device1/control',
+    'home/device2/control',
+    'home/outlet1/control',
+    # Add more device topics as needed
+]
+
+# Create an MQTT client instance
 client = mqtt.Client()
-client.on_connect = on_connect
+
+# Assign the callback function
 client.on_message = on_message
 
-client.connect("localhost", 1883, 60) #Replace with MQTT broker's address
-print("Listening Forever")
-try:
-	client.loop_forever()
-except:
-	print("Something happened while connecting the broker!")
+# Connect to the broker
+client.connect(MQTT_BROKER, MQTT_PORT, 60)
+
+# Subscribe to each topic in the list
+for topic in topics:
+    client.subscribe(topic)
+
+# Start the loop to process received messages
+client.loop_forever()

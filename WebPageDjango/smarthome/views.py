@@ -16,7 +16,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError, models
 from django.utils.dateparse import parse_date
-
+import paho.mqtt.client as mqtt  
 
 def home_view(request):
     """View function for the home page of the smart home application."""
@@ -100,6 +100,17 @@ class DeviceDetailView(DetailView):
         context['user'] = self.request.user
         return context
 
+# MQTT configuration
+MQTT_BROKER = 'localhost'
+MQTT_PORT = 1883  # or 8883 for SSL
+MQTT_TOPIC = 'channel'  # Change to your topic
+
+# Initialize the MQTT client
+mqtt_client = mqtt.Client()
+
+# Connect to the MQTT broker
+mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
+
 class DeviceControlView(DetailView):
     model = Device
     context_object_name = 'device'
@@ -138,6 +149,7 @@ class DeviceControlView(DetailView):
                     updated_by=updated_by,
                     message="Device turned on"
                 )
+                mqtt_client.publish(MQTT_TOPIC, f"Device {self.object.name} turned on")
 
         elif action == 'turn_off':
             if self.object.is_active:
@@ -153,6 +165,7 @@ class DeviceControlView(DetailView):
                     updated_by=updated_by,
                     message="Device turned off"
                 )
+                mqtt_client.publish(MQTT_TOPIC, f"Device {self.object.name} turned off")
 
         elif action.startswith('turn_on_outlet_'):
             outlet_id = action.split('_')[-1]
@@ -161,7 +174,7 @@ class DeviceControlView(DetailView):
                 outlet.is_active = True
                 outlet.save()
                 History.objects.create(
-                    table_name=table_name,
+                    table_name="Outlet",
                     record_id=outlet.id,
                     field_name='is_active',
                     old_value='False',
@@ -170,6 +183,7 @@ class DeviceControlView(DetailView):
                     updated_by=updated_by,
                     message=f"Outlet {outlet_id} turned on on device '{self.object.name}'"
                 )
+                mqtt_client.publish(MQTT_TOPIC, f"Outlet {outlet_id} on device '{self.object.name}' turned on")
 
         elif action.startswith('turn_off_outlet_'):
             outlet_id = action.split('_')[-1]
@@ -178,7 +192,7 @@ class DeviceControlView(DetailView):
                 outlet.is_active = False
                 outlet.save()
                 History.objects.create(
-                    table_name=table_name,
+                    table_name="Outlet",
                     record_id=outlet.id,
                     field_name='is_active',
                     old_value='True',
@@ -187,6 +201,7 @@ class DeviceControlView(DetailView):
                     updated_by=updated_by,
                     message=f"Outlet {outlet_id} turned off on device '{self.object.name}'"
                 )
+                mqtt_client.publish(MQTT_TOPIC, f"Outlet {outlet_id} on device '{self.object.name}' turned off")
 
         elif action == 'change_intensity' and intensity is not None:
             old_value = str(self.object.intensity) if hasattr(self.object, 'intensity') else 'N/A'
@@ -202,27 +217,28 @@ class DeviceControlView(DetailView):
                 updated_by=updated_by,
                 message=f"Intensity changed on device '{self.object.name}'"
             )
+            mqtt_client.publish(MQTT_TOPIC, f"Intensity for device '{self.object.name}' changed to {intensity}")
 
         elif action == 'set_temperature' and temperature is not None and self.object.device_type == 'clima':
-                    # Validate and set the temperature
-                    try:
-                        temperature = float(temperature)  # Convert to float
-                        old_value = str(self.object.temperature) if hasattr(self.object, 'temperature') else 'N/A'
-                        self.object.temperature = temperature  # Assuming you have a temperature field in your model
-                        self.object.save()
-                        History.objects.create(
-                            table_name=table_name,
-                            record_id=self.object.id,
-                            field_name='temperature',
-                            old_value=old_value,
-                            new_value=str(temperature),
-                            updated_at=updated_at,
-                            updated_by=updated_by,
-                            message=f"Temperature for device '{self.object.name}' set to {temperature}°C"
-                        )
-                    except ValueError:
-                        # Handle invalid temperature input
-                        pass  # You might want to add logging or user feedback here
+            try:
+                temperature = float(temperature)
+                old_value = str(self.object.temperature) if hasattr(self.object, 'temperature') else 'N/A'
+                self.object.temperature = temperature
+                self.object.save()
+                History.objects.create(
+                    table_name=table_name,
+                    record_id=self.object.id,
+                    field_name='temperature',
+                    old_value=old_value,
+                    new_value=str(temperature),
+                    updated_at=updated_at,
+                    updated_by=updated_by,
+                    message=f"Temperature for device '{self.object.name}' set to {temperature}°C"
+                )
+                mqtt_client.publish(MQTT_TOPIC, f"Temperature for device '{self.object.name}' set to {temperature}°C")
+            except ValueError:
+                pass  # Handle invalid temperature input
+
         return redirect('device-control', pk=self.object.id)
 
 class DeviceCreateView(CreateView):

@@ -32,6 +32,9 @@
                     <button type="submit" name="action" value="turn_on_outlet_{{ outlet.id }}" class="btn btn-success">Turn On</button>
                     <button type="submit" name="action" value="turn_off_outlet_{{ outlet.id }}" class="btn btn-danger">Turn Off</button>
                 </div>
+                <span class="badge {{ outlet.is_active|yesno:'bg-success,text-black,bg-danger,text-white' }}">
+                    {{ outlet.is_active|yesno:'On,Off' }}
+                </span>
             </div>
         {% empty %}
             <p>No outlets available for this device.</p>

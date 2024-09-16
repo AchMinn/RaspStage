@@ -9,7 +9,6 @@
     <div class="device-info">
       <h2>{{ device.name }}</h2>
       <p><strong>Model:</strong> {{ device.model }}</p>
-      <p><strong>Serial Number:</strong> {{ device.serial_number }}</p>
       <p><strong>Status:</strong> {% if device.is_active %}Active{% else %}Not Active{% endif %}</p>
       <p><strong>Room:</strong> {{ device.room }}</p>
       <p><strong>Device Type:</strong> {{ device.get_device_type_display }}</p>
