@@ -35,6 +35,22 @@
         <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Filter</button>
     </form>
 
+    <!-- Clear Logs Button -->
+    {% if is_superuser %}
+    <form method="post" action="{% url 'clear_logs' %}" class="mb-3" onsubmit="return confirmClearLogs();">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Clear All Logs</button>
+    </form>
+{% else %}
+    <button class="btn btn-danger" onclick="alert('You are not allowed to remove logs.');">Clear All Logs</button>
+{% endif %}
+
+<script>
+    function confirmClearLogs() {
+        return confirm("Are you sure you want to clear all logs? This action cannot be undone.");
+    }
+</script>
+
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
@@ -66,4 +82,4 @@
         </table>
     </div>
 </div>
- {% endblock %}
+{% endblock %}

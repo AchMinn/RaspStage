@@ -4,7 +4,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.db.models import Q, Sum
 from django.contrib.auth import logout
-from django.views import generic
+from django.views import generic, View
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, DeleteView, UpdateView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.views import LoginView
@@ -443,6 +443,7 @@ class HistoryDashboardView(LoginRequiredMixin, ListView):
         context['field_name'] = self.request.GET.get('field_name', '')
         context['updated_at'] = self.request.GET.get('updated_at', '')  
         context['is_logged_in'] = self.request.user.is_authenticated
+        context['is_superuser'] = self.request.user.is_superuser  
         context['user'] = self.request.user
         return context
 
@@ -496,3 +497,8 @@ class ConsumptionDashboardView(LoginRequiredMixin, ListView):
         context['consumption_by_device_type'] = [consumption_by_device_type.get(device_type, 0) for device_type in device_types]
 
         return context
+
+class ClearLogsView(View):
+    def post(self, request):
+        History.objects.all().delete()  # Deletes all logs
+        return redirect('history-dashboard')  # Redirect back to the dashboard

@@ -22,9 +22,14 @@
     </form>
 
     {% elif device.device_type == 'plug' %}
-    <h4 class="text-center">Control Outlets</h4>
     <form method="post" class="text-center mt-4">
         {% csrf_token %}
+            <p>Control the plug</p>
+        <div class="btn-group mb-3" role="group" aria-label="Device Controls">
+            <button type="submit" name="action" value="turn_on" class="btn btn-success">Turn On</button>
+            <button type="submit" name="action" value="turn_off" class="btn btn-danger">Turn Off</button>
+        </div>
+                <h4 class="text-center">Control Outlets</h4>
         {% for outlet in device.outlets.all %}
             <div class="mb-2">
                 <strong>Outlet {{ outlet.outlet_number }}</strong>
@@ -39,6 +44,7 @@
         {% empty %}
             <p>No outlets available for this device.</p>
         {% endfor %}
+
     </form>
 
     {% elif device.device_type == 'clima' %}

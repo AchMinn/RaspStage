@@ -18,5 +18,5 @@ urlpatterns = [
     path('rooms/<int:pk>/', views.RoomDetailView.as_view(), name='room-detail'),
     path('logs/history/', views.HistoryDashboardView.as_view(), name='history-dashboard'),
     path('logs/consumption/', views.ConsumptionDashboardView.as_view(), name='consumption-dashboard'),
-
+    path('logs/history/clear/', views.ClearLogsView.as_view(), name='clear_logs'),
 ]
