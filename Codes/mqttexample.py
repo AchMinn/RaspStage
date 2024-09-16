@@ -2,54 +2,56 @@ import paho.mqtt.client as mqtt
 
 # Callback function to handle incoming messages
 def on_message(client, userdata, message):
-    msg = message.payload.decode()
+    msg = message.payload.decode('utf-8')
     topic = message.topic
     print(f"Message received on topic '{topic}': {msg}")
 
     if "turned on" in msg:
         # Handle regular device turn on
         if "Device" in msg:
-            device_name = msg.split(" ")[1]  # Extract device name
+            device_name = msg.split('"')[1]  # Extract device name
             print(f"Turning on Device: {device_name}")
             # Code to turn on the device
 
         # Handle outlet turn on
         elif "Outlet" in msg:
-            outlet_info = msg.split(" ")
+            outlet_info = msg.split('"')
             outlet_id = outlet_info[1]
-            device_name = outlet_info[5].strip("'")  # Extract device name
+            device_name = outlet_info[3]  # Extract device name
             print(f"Turning on Outlet: {outlet_id} on Device: {device_name}")
             # Code to turn on the outlet
 
     elif "turned off" in msg:
         # Handle regular device turn off
         if "Device" in msg:
-            device_name = msg.split(" ")[1]  # Extract device name
+            device_name = msg.split('"')[1]  # Extract device name
             print(f"Turning off Device: {device_name}")
             # Code to turn off the device
 
         # Handle outlet turn off
         elif "Outlet" in msg:
-            outlet_info = msg.split(" ")
+            outlet_info = msg.split('"')
             outlet_id = outlet_info[1]
-            device_name = outlet_info[5].strip("'")  # Extract device name
+            device_name = outlet_info[3]  # Extract device name
             print(f"Turning off Outlet: {outlet_id} on Device: {device_name}")
             # Code to turn off the outlet
 
     elif "changed to" in msg:
         # Handle intensity change
         if "Intensity" in msg:
-            device_name = msg.split("'")[1]  # Extract device name
-            intensity = msg.split(" ")[-1]  # Extract intensity value
-            print(f"Setting Intensity for Device: {device_name} to {intensity}")
+            parts = msg.split('"')
+            device_name = parts[1]
+            intensity = parts[3]
+            print(f"Setting Intensity for Device '{device_name}' to {intensity}")
             # Code to change the intensity
 
     elif "set to" in msg:
         # Handle temperature setting
         if "Temperature" in msg:
-            device_name = msg.split("'")[1]  # Extract device name
-            temperature = msg.split(" ")[-2]  # Extract temperature value
-            print(f"Setting Temperature for Device: {device_name} to {temperature}°C")
+            parts = msg.split('"')
+            device_name = parts[1]
+            temperature = parts[3]
+            print(f"Setting Temperature for Device '{device_name}' to {temperature}°C")
             # Code to set the temperature
 
 # MQTT configuration
@@ -61,6 +63,7 @@ topics = [
     'home/device1/control',
     'home/device2/control',
     'home/outlet1/control',
+    'channel',
     # Add more device topics as needed
 ]
 
