@@ -2,52 +2,46 @@
 {% load static %}
 
 {% block content %}
-<style>
-  .card-img-top {
-      width: 80%; /* Reduce image size to 80% of its container */
-      max-width: 300px; /* Set a maximum width */
-      height: auto; /* Maintain aspect ratio */
-      display: block; /* Make it a block element for centering */
-      margin: 0 auto; /* Center the image horizontally */
-  }
+<div class="container mx-auto mt-8 px-4">
+  <h1 class="text-3xl font-bold text-center mb-8">Rooms</h1>
 
-  .card-title {
-      text-align: center; /* Center the title */
-      font-size: 1.5em; /* Increase font size */
-      margin-top: 10px; /* Space above the title */
-  }
-
-  .card-text {
-      text-align: center; /* Center the description text */
-      font-size: 1.1em; /* Increase description font size */
-  }
-</style>
-
-<div class="container">
-  <h1>Rooms</h1>
-
-  <div class="row">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {% for room in room_list %}
-    <div class="col-md-4 mb-4">
-      <div class="card">
+    <div class="transform transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
+      <div class="bg-white rounded-lg overflow-hidden shadow-lg">
         <a href="{% url 'room-detail' room.id %}">
           {% if room.image %}
-          <img src="{{ room.image.url }}" class="card-img-top" alt="{{ room.name }}">
+          <img src="{{ room.image.url }}" class="w-full h-48 object-cover" alt="{{ room.name }}">
           {% else %}
-          <img src="{% static 'images/default_room.png' %}" class="card-img-top" alt="{{ room.name }}">
+          <img src="{% static 'images/default_room.png' %}" class="w-full h-48 object-cover" alt="{{ room.name }}">
           {% endif %}
         </a>
-        <div class="card-body">
-          <h5 class="card-title"><a style="color: #000000; text-decoration: none;" href="{% url 'room-detail' room.id %}">{{ room.name }}</a></h5>
-          <p class="card-text">{{ room.description }}</p>
+        <div class="p-4">
+          <h5 class="text-xl font-semibold text-center">
+            <a class="text-black hover:underline" href="{% url 'room-detail' room.id %}">{{ room.name }}</a>
+          </h5>
+          <p class="text-center text-gray-600 mt-2">{{ room.description }}</p>
         </div>
       </div>
     </div>
     {% empty %}
-    <div class="col-md-12">
-      <p>No rooms found.</p>
+    <div class="col-span-1 md:col-span-2 lg:col-span-3">
+      <p class="text-center">No rooms found.</p>
     </div>
     {% endfor %}
   </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach((card, index) => {
+            card.style.opacity = 0;  // Start hidden
+            card.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                card.style.opacity = 1;  // Fade in
+            }, index * 200);  // Stagger the fade-in
+        });
+    });
+</script>
 {% endblock %}

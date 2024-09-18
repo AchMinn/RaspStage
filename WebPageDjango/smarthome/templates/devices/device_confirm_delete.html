@@ -2,17 +2,15 @@
 {% load static %}
 
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-12">
-      <h1>Delete Device</h1>
-      <p>Are you sure you want to delete the device: "{{ object.name }}"?</p>
-      <form method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Confirm</button>
-        <a href="{% url 'devices' %}" class="btn btn-secondary">Cancel</a>
-      </form>
-    </div>
+<div class="container mx-auto mt-8 px-4">
+  <div class="text-center">
+    <h1 class="text-3xl font-bold mb-4">Delete Device</h1>
+    <p class="text-lg mb-6">Are you sure you want to delete the device: <strong>"{{ object.name }}"</strong>?</p>
+    <form method="post" class="flex justify-center space-x-4">
+      {% csrf_token %}
+      <button type="submit" class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition">Confirm</button>
+      <a href="{% url 'devices' %}" class="bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded hover:bg-gray-400 transition">Cancel</a>
+    </form>
   </div>
 </div>
 {% endblock %}

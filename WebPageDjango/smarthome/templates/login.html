@@ -1,56 +1,29 @@
 {% extends 'base_generic.html' %}
 
 {% block content %}
-  <style>
-    input[type="text"],
-    input[type="password"] {
-        max-width: 300px; /* Adjust as needed */
-        width: 100%; /* Make it responsive */
-        padding: 10px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc; /* Thin border */
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    form {
-        display: flex;
-        flex-direction: column; /* Stack form elements */
-        align-items: center; /* Center align the form */
-        margin-top: 70px; /* Add margin to the top */
-    }
-    button {
-        background-color: #007bff; /* Bootstrap primary color */
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s, transform 0.3s; /* Smooth transitions */
-        margin: 5px; /* Spacing between buttons */
-        text-align: center; /* Center text */
-    }
-    button:hover {
-        background-color: #0056b3; /* Darker shade on hover */
-        transform: translateY(-2px); /* Slight lift on hover */
-    }
-    button:active {
-        transform: translateY(0); /* Reset when active */
-    }
-    .button-container {
-        display: flex;
-        justify-content: center; /* Center align buttons horizontally */
-        margin-top: 10px; /* Space above buttons */
-        flex-wrap: wrap; /* Allow buttons to wrap if needed */
-    }
-  </style>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-    <div class="button-container">
-      <a href="{% url 'register' %}"><button type="button">Register</button></a>
-      <a href="{% url 'guest' %}"><button type="button">Continue as Guest</button></a>
-      <a href="{% url 'home' %}"><button type="button">Go to Home</button></a>
-    </div>
-  </form>
+  <div class="flex flex-col items-center mt-16">
+    <form method="post" class="flex flex-col items-center">
+      {% csrf_token %}
+<div class="mb-4 w-full max-w-xs">
+    <label for="id_username" class="block text-base font-medium text-gray-700 mb-2">Username</label> 
+    {{ form.username }}
+</div>
+<div class="mb-4 w-full max-w-xs">
+    <label for="id_password" class="block text-base font-medium text-gray-700 mb-2">Password</label> 
+    {{ form.password }}
+</div>
+      <button type="submit" class="bg-blue-500 text-white py-2 px-6 rounded shadow transition-transform duration-300 hover:bg-blue-600 hover:translate-y-1">Login</button>
+      <div class="button-container flex justify-center mt-4 space-x-2 flex-wrap">
+        <a href="{% url 'register' %}">
+          <button type="button" class="bg-gray-500 text-white py-2 px-6 rounded shadow transition-transform duration-300 hover:bg-gray-600 hover:translate-y-1">Register</button>
+        </a>
+        <a href="{% url 'guest' %}">
+          <button type="button" class="bg-gray-500 text-white py-2 px-6 rounded shadow transition-transform duration-300 hover:bg-gray-600 hover:translate-y-1">Continue as Guest</button>
+        </a>
+        <a href="{% url 'home' %}">
+          <button type="button" class="bg-gray-500 text-white py-2 px-6 rounded shadow transition-transform duration-300 hover:bg-gray-600 hover:translate-y-1">Go to Home</button>
+        </a>
+      </div>
+    </form>
+  </div>
 {% endblock %}

@@ -2,76 +2,73 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1 class="text-center">Control {{ device.name }}</h1>
+<div class="container mx-auto mt-4 px-4">
+    <h1 class="text-3xl font-bold text-center">Control {{ device.name }}</h1>
 
     {% if device.device_type == 'lampe' %}
     <form method="post" class="text-center mt-4">
         {% csrf_token %}
         <div class="btn-group mb-3" role="group" aria-label="Device Controls">
-            <button type="submit" name="action" value="turn_on" class="btn btn-success">Turn On</button>
-            <button type="submit" name="action" value="turn_off" class="btn btn-danger">Turn Off</button>
+            <button type="submit" name="action" value="turn_on" class="bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600 transition">Turn On</button>
+            <button type="submit" name="action" value="turn_off" class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition">Turn Off</button>
         </div>
 
         <div class="mb-3">
-            <label for="intensity" class="form-label">Intensity (0-100):</label>
-            <input type="number" name="intensity" id="intensity" class="form-control" min="0" max="100" step="1" placeholder="Set intensity">
+            <label for="intensity" class="block text-sm font-medium mb-1">Intensity (0-100):</label>
+            <input type="number" name="intensity" id="intensity" class="border rounded py-2 px-3 w-full" min="0" max="100" step="1" placeholder="Set intensity">
         </div>
 
-        <button type="submit" name="action" value="change_intensity" class="btn btn-primary">Change Intensity</button>
+        <button type="submit" name="action" value="change_intensity" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition">Change Intensity</button>
     </form>
 
     {% elif device.device_type == 'plug' %}
     <form method="post" class="text-center mt-4">
         {% csrf_token %}
-            <p>Control the plug</p>
+        <p class="text-lg">Control the plug</p>
         <div class="btn-group mb-3" role="group" aria-label="Device Controls">
-            <button type="submit" name="action" value="turn_on" class="btn btn-success">Turn On</button>
-            <button type="submit" name="action" value="turn_off" class="btn btn-danger">Turn Off</button>
+            <button type="submit" name="action" value="turn_on" class="bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600 transition">Turn On</button>
+            <button type="submit" name="action" value="turn_off" class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition">Turn Off</button>
         </div>
-                <h4 class="text-center">Control Outlets</h4>
+        <h4 class="text-xl mt-4">Control Outlets</h4>
         {% for outlet in device.outlets.all %}
             <div class="mb-2">
                 <strong>Outlet {{ outlet.outlet_number }}</strong>
                 <div class="btn-group" role="group">
-                    <button type="submit" name="action" value="turn_on_outlet_{{ outlet.id }}" class="btn btn-success">Turn On</button>
-                    <button type="submit" name="action" value="turn_off_outlet_{{ outlet.id }}" class="btn btn-danger">Turn Off</button>
+                    <button type="submit" name="action" value="turn_on_outlet_{{ outlet.id }}" class="bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600 transition">Turn On</button>
+                    <button type="submit" name="action" value="turn_off_outlet_{{ outlet.id }}" class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition">Turn Off</button>
                 </div>
-                <span class="badge {{ outlet.is_active|yesno:'bg-success,text-black,bg-danger,text-white' }}">
+                <span class="ml-2 badge {{ outlet.is_active|yesno:'bg-green-500 text-white,bg-red-500 text-white' }}">
                     {{ outlet.is_active|yesno:'On,Off' }}
                 </span>
             </div>
         {% empty %}
             <p>No outlets available for this device.</p>
         {% endfor %}
-
     </form>
 
     {% elif device.device_type == 'clima' %}
     <form method="post" class="text-center mt-4">
         {% csrf_token %}
         <div class="mb-3">
-            <label for="temperature" class="form-label">Set Temperature (°C):</label>
-            <input type="number" name="temperature" id="temperature" class="form-control" min="16" max="30" step="1" placeholder="Set temperature">
+            <label for="temperature" class="block text-sm font-medium mb-1">Set Temperature (°C):</label>
+            <input type="number" name="temperature" id="temperature" class="border rounded py-2 px-3 w-full" min="16" max="30" step="1" placeholder="Set temperature">
         </div>
 
         <div class="btn-group mb-3" role="group" aria-label="Device Controls">
-            <button type="submit" name="action" value="turn_on" class="btn btn-success">Turn On</button>
-            <button type="submit" name="action" value="turn_off" class="btn btn-danger">Turn Off</button>
+            <button type="submit" name="action" value="turn_on" class="bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600 transition">Turn On</button>
+            <button type="submit" name="action" value="turn_off" class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition">Turn Off</button>
         </div>
 
-        <button type="submit" name="action" value="set_temperature" class="btn btn-primary">Set Temperature</button>
+        <button type="submit" name="action" value="set_temperature" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition">Set Temperature</button>
     </form>
     {% endif %}
 
-    <p class="text-center mt-4"><strong>Status:</strong> {{ device.is_active|yesno:"On,Off" }}</p>
+    <p class="text-center mt-4 text-lg"><strong>Status:</strong> {{ device.is_active|yesno:"On,Off" }}</p>
     
-    <h4 class="text-center mt-4">Consumption Records</h4>
+    <h4 class="text-center mt-4 text-xl">Consumption Records</h4>
     <ul class="list-group">
         {% for record in device.measurement_set.all %}
-            <li class="list-group-item">
-                {{ record.last_updated }}: {{ record.value }} kWh
-            </li>
+            <li class="list-group-item border-b py-2">{{ record.last_updated }}: {{ record.value }} kWh</li>
         {% empty %}
             <li class="list-group-item">No consumption records available.</li>
         {% endfor %}

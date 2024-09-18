@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Add our new application
     'smarthome.apps.SmarthomeConfig', # This object was created for us in /smarthome/apps.py
+    'tailwind',
 ]
 
 MIDDLEWARE = [

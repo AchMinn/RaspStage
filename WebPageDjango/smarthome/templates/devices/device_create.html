@@ -2,58 +2,56 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-12">
-      <h1 class="text-center">Create Device</h1>
-      <form method="post" class="mt-4">
-        {% csrf_token %}
-        
-        <div class="form-group">
-          <label for="id_name">Name:</label>
-          <input type="text" class="form-control" id="id_name" name="name" maxlength="255" required>
-        </div>
+<div class="container mx-auto mt-4 px-4">
+  <div class="text-center">
+    <h1 class="text-3xl font-bold">Create Device</h1>
+    <form method="post" class="mt-4">
+      {% csrf_token %}
+      
+      <div class="mb-4">
+        <label for="id_name" class="block text-sm font-medium mb-1">Name:</label>
+        <input type="text" class="border rounded w-full py-2 px-3" id="id_name" name="name" maxlength="255" required>
+      </div>
 
-        <div class="form-group">
-          <label for="id_model">Model:</label>
-          <input type="text" class="form-control" id="id_model" name="model" maxlength="255" required>
-        </div>
+      <div class="mb-4">
+        <label for="id_model" class="block text-sm font-medium mb-1">Model:</label>
+        <input type="text" class="border rounded w-full py-2 px-3" id="id_model" name="model" maxlength="255" required>
+      </div>
 
-        <div class="form-group">
-          <label for="id_description">Description:</label>
-          <textarea class="form-control" id="id_description" name="description" rows="3"></textarea>
-        </div>
+      <div class="mb-4">
+        <label for="id_description" class="block text-sm font-medium mb-1">Description:</label>
+        <textarea class="border rounded w-full py-2 px-3" id="id_description" name="description" rows="3"></textarea>
+      </div>
 
-        <div class="form-group">
-          <label for="id_room">Room:</label>
-          <select class="form-control" id="id_room" name="room">
-            <option value="">---------</option>
-            {% for room in room_list %}
-            <option value="{{ room.id }}">{{ room.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
+      <div class="mb-4">
+        <label for="id_room" class="block text-sm font-medium mb-1">Room:</label>
+        <select class="border rounded w-full py-2 px-3" id="id_room" name="room">
+          <option value="">---------</option>
+          {% for room in room_list %}
+          <option value="{{ room.id }}">{{ room.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
 
-        <div class="form-group form-check">
-          <input type="checkbox" class="form-check-input" id="id_is_active" name="is_active">
-          <label class="form-check-label" for="id_is_active">Is Active</label>
-        </div>
+      <div class="mb-4 flex items-center">
+        <input type="checkbox" class="mr-2" id="id_is_active" name="is_active">
+        <label class="text-sm font-medium" for="id_is_active">Is Active</label>
+      </div>
 
-        <div class="form-group">
-          <label for="id_device_type">Device Type:</label>
-          <select class="form-control" id="id_device_type" name="device_type">
-            <option value="lampe">Lampe</option>
-            <option value="plug">Plug</option>
-            <option value="clima">Clima</option>
-          </select>
-        </div>
+      <div class="mb-4">
+        <label for="id_device_type" class="block text-sm font-medium mb-1">Device Type:</label>
+        <select class="border rounded w-full py-2 px-3" id="id_device_type" name="device_type">
+          <option value="lampe">Lampe</option>
+          <option value="plug">Plug</option>
+          <option value="clima">Clima</option>
+        </select>
+      </div>
 
-        <div class="text-center mt-4">
-          <button type="submit" class="btn btn-primary">Save</button>
-          <a href="{% url 'devices' %}" class="btn btn-secondary">Cancel</a>
-        </div>
-      </form>
-    </div>
+      <div class="text-center mt-4">
+        <button type="submit" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition">Save</button>
+        <a href="{% url 'devices' %}" class="bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded hover:bg-gray-400 transition">Cancel</a>
+      </div>
+    </form>
   </div>
 </div>
 {% endblock %}

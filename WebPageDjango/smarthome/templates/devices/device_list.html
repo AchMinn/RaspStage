@@ -1,58 +1,64 @@
 {% extends "base_generic.html" %}
 {% load static %}
 
-
-
 {% block content %}
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-12">
-      <h1 class="text-center">Devices</h1>
-      <div class="d-flex justify-content-end mb-3">
-        <a href="{% url 'device-create' %}" class="btn btn-primary">Add Device</a>
-      </div>
+<div class="container mx-auto mt-4 px-4">
+  <div class="text-center mb-4">
+    <h1 class="text-3xl font-bold">Devices</h1>
+    <div class="flex justify-end mb-3">
+      <a href="{% url 'device-create' %}" class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 transition">Add Device</a>
     </div>
   </div>
 
   {% if device_list %}
-    <table class="device-list-table table table-striped table-hover">
+    <table class="min-w-full bg-white border border-gray-200 shadow-md rounded-lg overflow-hidden">
       <thead>
-        <tr>
-          <th>Device ID</th>
-          <th>Name</th>
-          <th>Description</th>
-          <th>Type</th>
-          <th>Status</th>
-          <th>Actions</th>
+        <tr class="bg-gray-100">
+          <th class="py-2 px-4 border-b text-left">Device ID</th>
+          <th class="py-2 px-4 border-b text-left">Name</th>
+          <th class="py-2 px-4 border-b text-left">Description</th>
+          <th class="py-2 px-4 border-b text-left">Type</th>
+          <th class="py-2 px-4 border-b text-left">Status</th>
+          <th class="py-2 px-4 border-b text-left">Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for device in device_list %}
-          <tr>
-            <td>{{ device.id }}</td>
-            <td><a href="{% url 'device-detail' device.id %}">{{ device.name }}</a></td>
-            <td>{{ device.description }}</td>
-            <td>{{ device.get_device_type_display }}</td>
-            <td>{% if device.is_active %}Active{% else %}Not Active{% endif %}</td>
-            <td>
-              <a href="{% url 'device-control' device.id %}" class="btn btn-primary btn-sm">Control</a>
-              <a href="{% url 'device-update' device.id %}" class="btn btn-secondary btn-sm">Edit</a>
-              <a href="{% url 'device-delete' device.id %}" class="btn btn-danger btn-sm">Delete</a>
+          <tr class="fade-in hover:bg-gray-50 transition">
+            <td class="py-2 px-4 border-b">{{ device.id }}</td>
+            <td class="py-2 px-4 border-b"><a href="{% url 'device-detail' device.id %}" class="text-blue-500 hover:underline">{{ device.name }}</a></td>
+            <td class="py-2 px-4 border-b">{{ device.description }}</td>
+            <td class="py-2 px-4 border-b">{{ device.get_device_type_display }}</td>
+            <td class="py-2 px-4 border-b">{% if device.is_active %}Active{% else %}Not Active{% endif %}</td>
+            <td class="py-2 px-4 border-b">
+              <a href="{% url 'device-control' device.id %}" class="bg-blue-500 text-white rounded px-2 py-1 hover:bg-blue-600 transition">Control</a>
+              <a href="{% url 'device-update' device.id %}" class="bg-gray-300 text-gray-800 rounded px-2 py-1 hover:bg-gray-400 transition">Edit</a>
+              <a href="{% url 'device-delete' device.id %}" class="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600 transition">Delete</a>
             </td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
   {% else %}
-    <div class="row">
-      <div class="col-12">
-        <p class="text-center">No devices found.</p>
-      </div>
+    <div class="text-center mt-4">
+      <p>No devices found.</p>
     </div>
   {% endif %}
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const rows = document.querySelectorAll('.fade-in');
+        rows.forEach((row, index) => {
+            row.style.opacity = 0;  // Start hidden
+            row.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                row.style.opacity = 1;  // Fade in
+            }, index * 100);  // Stagger the fade-in
+        });
+    });
+</script>
 {% endblock %}
 
 {% block extrahead %}
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 {% endblock %}

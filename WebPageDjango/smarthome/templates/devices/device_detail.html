@@ -2,45 +2,49 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-4">
-  <h1 class="text-center">Device Details</h1>
+<div class="container mx-auto mt-8 px-4">
+  <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Device Details</h1>
 
-  <div class="device-details d-flex flex-column flex-md-row justify-content-between mt-4">
-    <div class="device-info">
-      <h2>{{ device.name }}</h2>
-      <p><strong>Model:</strong> {{ device.model }}</p>
-      <p><strong>Status:</strong> {% if device.is_active %}Active{% else %}Not Active{% endif %}</p>
-      <p><strong>Room:</strong> {{ device.room }}</p>
-      <p><strong>Device Type:</strong> {{ device.get_device_type_display }}</p>
+  <div class="device-details flex flex-col md:flex-row justify-between bg-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105">
+    <div class="device-info flex-1">
+      <h2 class="text-2xl font-semibold text-gray-800">{{ device.name }}</h2>
+      <p class="mt-2"><strong>Model:</strong> {{ device.model }}</p>
+      <p class="mt-2"><strong>Status:</strong> 
+        <span class="{% if device.is_active %}text-green-500{% else %}text-red-500{% endif %}">
+          {% if device.is_active %}Active{% else %}Not Active{% endif %}
+        </span>
+      </p>
+      <p class="mt-2"><strong>Room:</strong> {{ device.room }}</p>
+      <p class="mt-2"><strong>Device Type:</strong> {{ device.get_device_type_display }}</p>
     </div>
 
-    <div class="device-image text-center">
+    <div class="device-image text-center mt-4 md:mt-0 md:ml-6">
       {% if device.image %}
-        <img src="{{ device.image.url }}" alt="{{ device.name }} Image" class="img-fluid">
+        <img src="{{ device.image.url }}" alt="{{ device.name }} Image" class="w-48 h-48 object-cover rounded-lg shadow-md">
       {% else %}
-        <img src="{% static 'images/default_device.svg' %}" alt="Default Device Image" class="img-fluid">
+        <img src="{% static 'images/default_device.svg' %}" alt="Default Device Image" class="w-48 h-48 object-cover rounded-lg shadow-md">
       {% endif %}
-      <div class="device-control-button mt-3">
-        <a href="{% url 'device-control' device.pk %}" class="btn btn-primary">Control Device</a>
+      <div class="device-control-button mt-4">
+        <a href="{% url 'device-control' device.pk %}" class="bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 transition duration-200">Control Device</a>
       </div>
     </div>
   </div>
 
-  <div class="device-description mt-4">
-    <h3>Description</h3>
-    <p>{{ device.description }}</p>
+  <div class="device-description mt-6 bg-gray-100 p-4 rounded-lg shadow">
+    <h3 class="text-xl font-semibold">Description</h3>
+    <p class="mt-2 text-gray-700">{{ device.description }}</p>
   </div>
 
-  <div class="device-specifications mt-4">
-    <h3>Specifications</h3>
-    <ul>
+  <div class="device-specifications mt-6 bg-gray-100 p-4 rounded-lg shadow">
+    <h3 class="text-xl font-semibold">Specifications</h3>
+    <ul class="list-disc list-inside mt-2">
       <li>Created: {{ device.last_connected|date:'Y-m-d H:i:s' }}</li>
     </ul>
   </div>
 
-  <div class="device-actions mt-4 text-center">
-    <a href="{% url 'device-update' device.pk %}" class="btn btn-primary">Edit Device</a>
-    <a href="{% url 'device-delete' device.pk %}" class="btn btn-danger">Delete Device</a>
+  <div class="device-actions mt-6 text-center">
+    <a href="{% url 'device-update' device.pk %}" class="bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 transition duration-200">Edit Device</a>
+    <a href="{% url 'device-delete' device.pk %}" class="bg-red-500 text-white rounded-lg px-4 py-2 hover:bg-red-600 transition duration-200">Delete Device</a>
   </div>
 </div>
 {% endblock %}

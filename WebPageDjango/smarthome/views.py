@@ -51,13 +51,17 @@ def home_view(request):
     return render(request, 'home.html', context)
 
 
+from django.contrib.auth.forms import AuthenticationForm
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            
+
             # Get the 'next' parameter from the URL
             next_url = request.GET.get('next')
 
@@ -70,6 +74,14 @@ def login_view(request):
     else:
         form = AuthenticationForm()
 
+    # Add CSS classes to form fields
+    form.fields['username'].widget.attrs.update({
+        'class': 'border border-gray-300 rounded-md p-2 w-full'
+    })
+    form.fields['password'].widget.attrs.update({
+        'class': 'border border-gray-300 rounded-md p-2 w-full'
+    })
+
     context = {
         'form': form,
         'is_logged_in': request.user.is_authenticated,
@@ -77,7 +89,6 @@ def login_view(request):
     }
 
     return render(request, 'login.html', context)
-
 class DeviceListView(generic.ListView):
     model = Device
     context_object_name = 'device_list'   # your own name for the list as a template variable
