@@ -51,11 +51,19 @@ def home_view(request):
     return render(request, 'home.html', context)
 
 
-from django.contrib.auth.forms import AuthenticationForm
-from django.shortcuts import render, redirect
-from django.contrib.auth import login
+class RedirectIfAuthenticatedMixin:
+    """Redirect authenticated users away from specified views."""
+    
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('home')  # Change 'home' to your desired redirect URL
+        return super().dispatch(request, *args, **kwargs)
 
 def login_view(request):
+    # Check if the user is already authenticated
+    if request.user.is_authenticated:
+        return redirect('home')  # Redirect to home if already logged in
+
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -89,6 +97,26 @@ def login_view(request):
     }
 
     return render(request, 'login.html', context)
+
+class RegisterView(RedirectIfAuthenticatedMixin, CreateView):
+    form_class = UserCreationForm
+    template_name = 'register.html'
+    success_url = reverse_lazy('login')
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['username'].widget.attrs.update({
+            'class': 'border border-gray-300 rounded-md p-2 w-full'
+        })
+        form.fields['password1'].widget.attrs.update({
+            'class': 'border border-gray-300 rounded-md p-2 w-full'
+        })
+        form.fields['password2'].widget.attrs.update({
+            'class': 'border border-gray-300 rounded-md p-2 w-full'
+        })
+        return form
+
+
 class DeviceListView(generic.ListView):
     model = Device
     context_object_name = 'device_list'   # your own name for the list as a template variable
@@ -389,11 +417,6 @@ class RoomDetailView(DetailView):
         context['device_count'] = self.object.device_count
         context['devices'] = self.object.devices.all()  # Fetch all devices for the room
         return context
-
-class RegisterView(CreateView):
-    form_class = UserCreationForm
-    template_name = 'register.html'
-    success_url = reverse_lazy('login')
 
 class GuestView(TemplateView):
     template_name = 'guest.html'

@@ -9,22 +9,22 @@
       {% csrf_token %}
       
       <div class="mb-4">
-        <label for="id_name" class="block text-sm font-medium mb-1">Name:</label>
+        <label for="id_name" class="block text-m font-medium mb-1">Name:</label>
         <input type="text" class="border rounded w-full py-2 px-3" id="id_name" name="name" maxlength="255" required>
       </div>
 
       <div class="mb-4">
-        <label for="id_model" class="block text-sm font-medium mb-1">Model:</label>
+        <label for="id_model" class="block text-m font-medium mb-1">Model:</label>
         <input type="text" class="border rounded w-full py-2 px-3" id="id_model" name="model" maxlength="255" required>
       </div>
 
       <div class="mb-4">
-        <label for="id_description" class="block text-sm font-medium mb-1">Description:</label>
+        <label for="id_description" class="block text-m font-medium mb-1">Description:</label>
         <textarea class="border rounded w-full py-2 px-3" id="id_description" name="description" rows="3"></textarea>
       </div>
 
       <div class="mb-4">
-        <label for="id_room" class="block text-sm font-medium mb-1">Room:</label>
+        <label for="id_room" class="block text-m font-medium mb-1">Room:</label>
         <select class="border rounded w-full py-2 px-3" id="id_room" name="room">
           <option value="">---------</option>
           {% for room in room_list %}
@@ -35,11 +35,11 @@
 
       <div class="mb-4 flex items-center">
         <input type="checkbox" class="mr-2" id="id_is_active" name="is_active">
-        <label class="text-sm font-medium" for="id_is_active">Is Active</label>
+        <label class="text-m font-medium" for="id_is_active">Is Active</label>
       </div>
 
       <div class="mb-4">
-        <label for="id_device_type" class="block text-sm font-medium mb-1">Device Type:</label>
+        <label for="id_device_type" class="block text-m font-medium mb-1">Device Type:</label>
         <select class="border rounded w-full py-2 px-3" id="id_device_type" name="device_type">
           <option value="lampe">Lampe</option>
           <option value="plug">Plug</option>

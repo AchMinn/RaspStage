@@ -8,6 +8,11 @@ body {
     background-color: #f8f9fa; /* Light background for better visibility */
 }
 
+.nav-link.active {
+    background-color: #0056b3; /* Change to your desired active color */
+    color: white; /* Change text color for active link */
+}
+
 h1 {
     color: #343a40; /* Darker color for headings */
 }

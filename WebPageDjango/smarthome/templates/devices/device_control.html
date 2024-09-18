@@ -49,15 +49,15 @@
     {% elif device.device_type == 'clima' %}
     <form method="post" class="text-center mt-4">
         {% csrf_token %}
+        <div class="btn-group mb-3" role="group" aria-label="Device Controls">
+            <button type="submit" name="action" value="turn_on" class="bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600 transition">Turn On</button>
+            <button type="submit" name="action" value="turn_off" class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition">Turn Off</button>
+        </div>
         <div class="mb-3">
             <label for="temperature" class="block text-sm font-medium mb-1">Set Temperature (°C):</label>
             <input type="number" name="temperature" id="temperature" class="border rounded py-2 px-3 w-full" min="16" max="30" step="1" placeholder="Set temperature">
         </div>
 
-        <div class="btn-group mb-3" role="group" aria-label="Device Controls">
-            <button type="submit" name="action" value="turn_on" class="bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600 transition">Turn On</button>
-            <button type="submit" name="action" value="turn_off" class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition">Turn Off</button>
-        </div>
 
         <button type="submit" name="action" value="set_temperature" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition">Set Temperature</button>
     </form>

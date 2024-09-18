@@ -1,6 +1,22 @@
 from django.shortcuts import redirect
 from django.urls import resolve
 
+class RedirectAuthenticatedUserMiddleware:
+    """Redirect authenticated users away from the login and registration pages."""
+    
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # Check if the user is authenticated and trying to access login or register
+        if request.user.is_authenticated:
+            if request.path in ['/login/', '/register/']:  # Add your login and register paths
+                return redirect('home')  # Redirect to home or any other page
+
+        response = self.get_response(request)
+        return response
+
+
 class RestrictAccessMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
