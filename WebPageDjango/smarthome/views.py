@@ -142,7 +142,10 @@ class DeviceDetailView(DetailView):
 # MQTT configuration
 MQTT_BROKER = 'localhost'
 MQTT_PORT = 1883  # or 8883 for SSL
-MQTT_TOPIC = 'channel'  # Change to your topic
+MQTT_TOPIC_ONOFF = 'smarthome/devices/onoff'  # Topic for on/off control
+MQTT_TOPIC_OUTLET = 'smarthome/devices/outlet'  # Topic for outlet control
+MQTT_TOPIC_INTENSITY = 'smarthome/devices/intensity'  # Topic for intensity control
+MQTT_TOPIC_TEMPERATURE = 'smarthome/devices/temperature'  # Topic for temperature control
 
 # Initialize the MQTT client
 mqtt_client = mqtt.Client()
@@ -172,6 +175,7 @@ class DeviceControlView(DetailView):
         table_name = 'Device'
         updated_at = timezone.now()
         updated_by = request.user
+        device_type = self.object.device_type.lower()  # Get device type in lowercase
 
         # Control logic based on the action
         if action == 'turn_on':
@@ -188,7 +192,7 @@ class DeviceControlView(DetailView):
                     updated_by=updated_by,
                     message="Device turned on"
                 )
-                mqtt_client.publish(MQTT_TOPIC, f'Device "{self.object.name}" turned on')
+                mqtt_client.publish(MQTT_TOPIC_ONOFF, f"Device '{self.object.name}' of type '{device_type}' turned on")
 
         elif action == 'turn_off':
             if self.object.is_active:
@@ -204,7 +208,7 @@ class DeviceControlView(DetailView):
                     updated_by=updated_by,
                     message="Device turned off"
                 )
-                mqtt_client.publish(MQTT_TOPIC, f'Device "{self.object.name}" turned off')
+                mqtt_client.publish(MQTT_TOPIC_ONOFF, f"Device '{self.object.name}' of type '{device_type}' turned off")
 
         elif action.startswith('turn_on_outlet_'):
             outlet_id = action.split('_')[-1]
@@ -222,7 +226,7 @@ class DeviceControlView(DetailView):
                     updated_by=updated_by,
                     message=f'Outlet "{outlet_id}" turned on on device "{self.object.name}"'
                 )
-                mqtt_client.publish(MQTT_TOPIC, f'Outlet "{outlet_id}" on device "{self.object.name}" turned on')
+                mqtt_client.publish(MQTT_TOPIC_OUTLET, f"Outlet '{outlet_id}' on device '{self.object.name}' turned on")
 
         elif action.startswith('turn_off_outlet_'):
             outlet_id = action.split('_')[-1]
@@ -240,7 +244,7 @@ class DeviceControlView(DetailView):
                     updated_by=updated_by,
                     message=f"Outlet {outlet_id} turned off on device '{self.object.name}'"
                 )
-                mqtt_client.publish(MQTT_TOPIC, f'Outlet "{outlet_id}" on device "{self.object.name}" turned off')
+                mqtt_client.publish(MQTT_TOPIC_OUTLET, f"Outlet '{outlet_id}' on device '{self.object.name}' turned off")
 
         elif action == 'change_intensity' and intensity is not None:
             old_value = str(self.object.intensity) if hasattr(self.object, 'intensity') else 'N/A'
@@ -256,7 +260,7 @@ class DeviceControlView(DetailView):
                 updated_by=updated_by,
                 message=f"Intensity changed on device '{self.object.name}'"
             )
-            mqtt_client.publish(MQTT_TOPIC, f'Intensity for device "{self.object.name}" changed to "{intensity}"')
+            mqtt_client.publish(MQTT_TOPIC_INTENSITY, f"Intensity for device '{self.object.name}' changed to '{intensity}'")
 
         elif action == 'set_temperature' and temperature is not None and self.object.device_type == 'clima':
             try:
@@ -274,7 +278,7 @@ class DeviceControlView(DetailView):
                     updated_by=updated_by,
                     message=f"Temperature for device '{self.object.name}' set to {temperature}°C"
                 )
-                mqtt_client.publish(MQTT_TOPIC, f'Temperature for device "{self.object.name}" set to "{temperature}"°C')
+                mqtt_client.publish(MQTT_TOPIC_TEMPERATURE, f"Temperature for device '{self.object.name}' set to '{temperature}'°C")
             except ValueError:
                 pass  # Handle invalid temperature input
 
