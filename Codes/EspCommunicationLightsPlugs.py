@@ -6,7 +6,6 @@ MQTT_BROKER = '192.168.0.103'
 MQTT_PORT = 1883
 MQTT_TOPIC_ONOFF = 'smarthome/devices/onoff'
 MQTT_TOPIC_INTENSITY = 'smarthome/devices/intensity'
-MQTT_TOPIC_TEMPERATURE = 'smarthome/devices/temperature'
 
 # Initialize the MQTT client
 mqtt_client = mqtt.Client()
@@ -67,31 +66,12 @@ def handle_intensity_change(msg):
     else:
         print("Error: Intensity or device info could not be extracted.")
 
-def handle_temperature_change(msg):
-    """Handle temperature change messages."""
-    temperature = extract_temperature(msg)
-    device_info = extract_device_info(msg)
-    if device_info and temperature is not None:
-        device_name, device_type = device_info
-        print(f"Setting temperature for Clima: {device_name} to {temperature}°C")
-        # Add logic to set the temperature
-    else:
-        print("Error: Temperature or device info could not be extracted.")
-
 def extract_intensity(msg):
     """Extract intensity value from the message."""
     parts = msg.split("'")
     if len(parts) >= 5:
         return parts[3]  # Intensity value is expected here
     print("Error: Intensity value could not be extracted.")
-    return None
-
-def extract_temperature(msg):
-    """Extract temperature value from the message."""
-    parts = msg.split("'")
-    if len(parts) >= 5:
-        return parts[3]  # Temperature value is expected here
-    print("Error: Temperature value could not be extracted.")
     return None
 
 def extract_device_info(msg):
@@ -117,7 +97,6 @@ mqtt_client.on_message = on_message
 try:
     mqtt_client.subscribe(MQTT_TOPIC_ONOFF)
     mqtt_client.subscribe(MQTT_TOPIC_INTENSITY)
-    mqtt_client.subscribe(MQTT_TOPIC_TEMPERATURE)
 except Exception as e:
     print(f"Error: Could not subscribe to topics: {e}")
 
