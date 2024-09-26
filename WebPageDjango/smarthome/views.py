@@ -1,5 +1,5 @@
 from django.http import HttpResponseRedirect
-from .models import Room, Device, History, Measurement, Outlet
+from .models import Room, Device, History, Measurement
 from django.conf import settings
 from django.utils import timezone
 from django.db.models import Q, Sum
@@ -140,13 +140,14 @@ class DeviceDetailView(DetailView):
         return context
 
 # MQTT configuration
-MQTT_BROKER = 'localhost'
+MQTT_BROKER = '192.168.0.103'
 MQTT_PORT = 1883  # or 8883 for SSL
 MQTT_TOPIC_ONOFF = 'smarthome/devices/onoff'  # Topic for on/off control
-MQTT_TOPIC_OUTLET = 'smarthome/devices/outlet'  # Topic for outlet control
 MQTT_TOPIC_INTENSITY = 'smarthome/devices/intensity'  # Topic for intensity control
 MQTT_TOPIC_TEMPERATURE = 'smarthome/devices/temperature'  # Topic for temperature control
-
+MQTT_TOPIC_MODE = 'smarthome/devices/mode'  # Topic for clima mode
+MQTT_TOPIC_FAN_SPEED = 'smarthome/devices/fan_speed'  # Topic for fan speed of the clima
+MQTT_TOPIC_OPTIONS = 'smarthome/devices/options' # Topic for clima options
 # Initialize the MQTT client
 mqtt_client = mqtt.Client()
 
@@ -170,6 +171,9 @@ class DeviceControlView(DetailView):
         action = request.POST.get('action')
         intensity = request.POST.get('intensity')
         temperature = request.POST.get('temperature')
+        mode = request.POST.get('mode')  
+        fan_speed = request.POST.get('fan_speed')
+
 
         # Prepare common fields for the History log
         table_name = 'Device'
@@ -210,42 +214,6 @@ class DeviceControlView(DetailView):
                 )
                 mqtt_client.publish(MQTT_TOPIC_ONOFF, f"Device '{self.object.name}' of type '{device_type}' turned off")
 
-        elif action.startswith('turn_on_outlet_'):
-            outlet_id = action.split('_')[-1]
-            outlet = get_object_or_404(Outlet, id=outlet_id, device=self.object)
-            if not outlet.is_active:
-                outlet.is_active = True
-                outlet.save()
-                History.objects.create(
-                    table_name="Outlet",
-                    record_id=outlet.id,
-                    field_name='is_active',
-                    old_value='False',
-                    new_value='True',
-                    updated_at=updated_at,
-                    updated_by=updated_by,
-                    message=f'Outlet "{outlet_id}" turned on on device "{self.object.name}"'
-                )
-                mqtt_client.publish(MQTT_TOPIC_OUTLET, f"Outlet '{outlet_id}' on device '{self.object.name}' turned on")
-
-        elif action.startswith('turn_off_outlet_'):
-            outlet_id = action.split('_')[-1]
-            outlet = get_object_or_404(Outlet, id=outlet_id, device=self.object)
-            if outlet.is_active:
-                outlet.is_active = False
-                outlet.save()
-                History.objects.create(
-                    table_name="Outlet",
-                    record_id=outlet.id,
-                    field_name='is_active',
-                    old_value='True',
-                    new_value='False',
-                    updated_at=updated_at,
-                    updated_by=updated_by,
-                    message=f"Outlet {outlet_id} turned off on device '{self.object.name}'"
-                )
-                mqtt_client.publish(MQTT_TOPIC_OUTLET, f"Outlet '{outlet_id}' on device '{self.object.name}' turned off")
-
         elif action == 'change_intensity' and intensity is not None:
             old_value = str(self.object.intensity) if hasattr(self.object, 'intensity') else 'N/A'
             self.object.intensity = float(intensity)
@@ -282,6 +250,84 @@ class DeviceControlView(DetailView):
             except ValueError:
                 pass  # Handle invalid temperature input
 
+        elif action == 'set_mode' and mode is not None and self.object.device_type == 'clima':
+            old_mode = self.object.mode
+            self.object.mode = mode
+            self.object.save()
+
+            # Log mode change
+            History.objects.create(
+                table_name=table_name,
+                record_id=self.object.id,
+                field_name='mode',
+                old_value=old_mode,
+                new_value=mode,
+                updated_at=updated_at,
+                updated_by=updated_by,
+                message=f"Mode for device '{self.object.name}' set to '{mode}'"
+            )
+
+            # Publish MQTT update
+            mqtt_client.publish(MQTT_TOPIC_MODE, f"Mode for device '{self.object.name}' set to '{mode}'")
+
+        elif action == 'set_fan_speed' and fan_speed is not None and self.object.device_type == 'clima':
+            old_fan_speed = self.object.fan_speed
+            self.object.fan_speed = fan_speed
+            self.object.save()
+
+            # Log fan speed change
+            History.objects.create(
+                table_name=table_name,
+                record_id=self.object.id,
+                field_name='fan_speed',
+                old_value=old_fan_speed,
+                new_value=fan_speed,
+                updated_at=updated_at,
+                updated_by=updated_by,
+                message=f"Fan speed for device '{self.object.name}' set to '{fan_speed}'"
+            )
+
+            # Publish MQTT update
+            mqtt_client.publish(MQTT_TOPIC_FAN_SPEED, f"Fan speed for device '{self.object.name}' set to '{fan_speed}'")
+
+        elif action == 'set_clima' and self.object.device_type == 'clima':
+            selected_option = request.POST.get('option')
+
+            # Define options
+            options = {
+                'turbo': 'Turbo',
+                'swing': 'Swing',
+                'led': 'LED',
+                'sleep': 'Sleep'
+            }
+
+            # Reset all options to False
+            self.object.turbo = False
+            self.object.swing = False
+            self.object.led = False
+            self.object.sleep = False
+
+            # Activate the selected option
+            option_name = options.get(selected_option)
+            if option_name:
+                setattr(self.object, selected_option, True)
+
+            self.object.save()
+
+            # Log the activation of the selected option
+            if option_name:
+                History.objects.create(
+                    table_name=table_name,
+                    record_id=self.object.id,
+                    field_name='options',
+                    new_value=option_name,
+                    updated_at=updated_at,
+                    updated_by=updated_by,
+                    message=f"Option '{option_name}' activated for device '{self.object.name}'"
+                )
+
+                # Publish MQTT update
+                mqtt_client.publish(MQTT_TOPIC_OPTIONS, f"Option '{option_name}' activated for device '{self.object.name}'")
         return redirect('device-control', pk=self.object.id)
 
 class DeviceCreateView(CreateView):
@@ -323,6 +369,14 @@ class DeviceUpdateView(UpdateView):
     fields = ['name', 'model', 'description', 'room', 'device_type']
     success_url = reverse_lazy('devices')
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        for field in form.fields.values():
+            field.widget.attrs.update({
+                'class': 'border rounded w-full py-2 px-3'
+            })
+        return form
+
     def form_valid(self, form):
         # Get the original device instance
         original_device = self.get_object()
@@ -339,7 +393,7 @@ class DeviceUpdateView(UpdateView):
             old_value = getattr(original_device, field)
             new_value = getattr(form.instance, field)
             if old_value != new_value:
-                changed_fields.append((field, old_value, new_value))
+                changed_fields.append((old_value, new_value))
 
                 # Create individual History record for each changed field
                 History.objects.create(
@@ -353,14 +407,8 @@ class DeviceUpdateView(UpdateView):
                     message=f'Device "{original_device.name}" was updated. Changes: {changed_fields}"'
                 )
 
-        # Optional: You can log a summary message if needed
-        if changed_fields:
-            summary_message = f'Device "{original_device.name}" was updated. Changes: {changed_fields}'
-            # Log or handle summary_message as necessary
-
         return response
 
-        return response
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['is_logged_in'] = self.request.user.is_authenticated

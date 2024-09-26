@@ -5,7 +5,7 @@
 <div class="container mx-auto mt-4 px-4">
   <div class="text-center">
     <h1 class="text-3xl font-bold">Create Device</h1>
-    <form method="post" class="mt-4">
+    <form method="post" class="mt-4" id="device-form">
       {% csrf_token %}
       
       <div class="mb-4">
@@ -54,4 +54,21 @@
     </form>
   </div>
 </div>
+
+<script>
+  document.getElementById('device-form').onsubmit = function(event) {
+    const deviceType = document.getElementById('id_device_type').value;
+
+    // Check the device count before submitting the form
+    fetch(`/check_device_count/?device_type=${deviceType}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.count >= data.limit) {
+          event.preventDefault(); // Prevent form submission
+          alert(`You can only have ${data.limit} ${deviceType}s.`);
+        }
+      });
+  };
+</script>
+
 {% endblock %}

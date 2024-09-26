@@ -1,9 +1,7 @@
-from django.db import models
-from django.utils.timezone import now
-from django.core.exceptions import ValidationError
 from django.utils import timezone
-from django.contrib.auth.models import User
 from django.conf import settings
+from django.db import models
+from django.core.exceptions import ValidationError
 
 class Room(models.Model):
     name = models.CharField(max_length=255, choices=[
@@ -20,17 +18,44 @@ class Room(models.Model):
         return self.devices.count()
 
 class Device(models.Model):
+    DEVICE_TYPE_CHOICES = [
+        ('lampe', 'Lampe'), 
+        ('plug', 'Plug'), 
+        ('clima', 'Clima')
+    ]
+
+    MODE_CHOICES = [
+        ('auto', 'Auto'),
+        ('cool', 'Cool'),
+        ('dry', 'Dry'),
+        ('heat', 'Heat'),
+        ('fan', 'Fan'),
+    ]
+
+    FAN_SPEED_CHOICES = [
+        ('auto', 'Auto'),
+        ('min', 'Min'),
+        ('med', 'Med'),
+        ('max', 'Max'),
+    ]
+
     name = models.CharField(max_length=255)
     model = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     last_connected = models.DateTimeField(default=timezone.now)
     room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, related_name='devices')
     is_active = models.BooleanField(default=False)
-    device_type = models.CharField(max_length=255, choices=[
-        ('lampe', 'Lampe'), ('plug', 'Plug'), ('clima', 'Clima')
-    ], default='lampe')
+    device_type = models.CharField(max_length=255, choices=DEVICE_TYPE_CHOICES, default='lampe')
     intensity = models.IntegerField(null=True, blank=True, default=0)
     temperature = models.FloatField(null=True, blank=True, default=0)
+    
+    # Additional fields for climate control
+    mode = models.CharField(max_length=10, choices=MODE_CHOICES, default='auto')
+    fan_speed = models.CharField(max_length=10, choices=FAN_SPEED_CHOICES, default='auto')
+    turbo = models.BooleanField(default=False)
+    swing = models.BooleanField(default=False)
+    led = models.BooleanField(default=False)
+    sleep = models.BooleanField(default=False)
 
     def clean(self):
         if self.intensity is not None and (self.intensity < 0 or self.intensity > 100):
@@ -38,32 +63,25 @@ class Device(models.Model):
         if self.temperature is not None and self.temperature < 0:
             raise ValidationError('Temperature cannot be negative.')
 
+        # Check limits for device types
+        self.check_device_limits()
+
+    def check_device_limits(self):
+        limit = 0
+        if self.device_type in ['lampe', 'plug']:
+            limit = 5
+        elif self.device_type == 'clima':
+            limit = 3
+        
+        current_count = Device.objects.filter(device_type=self.device_type).count()
+        if current_count >= limit and self.pk is None:  # Only check for new devices
+            raise ValidationError(f"You can only have {limit} {self.device_type}s.")
+
     def save(self, *args, **kwargs):
-        if self.pk is None:  # Only create outlets for new devices
-            super().save(*args, **kwargs)  # Save the device first to get its ID
-            if self.device_type == 'plug':
-                for i in range(1, 5):  # Create 4 outlets
-                    Outlet.objects.create(device=self, outlet_number=i)
-        else:
-            super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
-
-class Outlet(models.Model):
-    device = models.ForeignKey(Device, related_name='outlets', on_delete=models.CASCADE)
-    is_active = models.BooleanField(default=False)
-    outlet_number = models.PositiveIntegerField()
-
-    class Meta:
-        unique_together = ('device', 'outlet_number')
-
-    def clean(self):
-        if self.outlet_number < 1:
-            raise ValidationError('Outlet number must be a positive integer.')
-
-    def __str__(self):
-        return f"Outlet {self.outlet_number} on {self.device.name}"
 
 class Measurement(models.Model):
     name = models.CharField(max_length=100)
@@ -87,3 +105,6 @@ class History(models.Model):
     updated_at = models.DateTimeField()
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     message = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"History of {self.table_name} ID {self.record_id} at {self.updated_at}"

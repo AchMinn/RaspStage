@@ -7,6 +7,8 @@
 
     {% if device.device_type == 'lampe' %}
     <form method="post" class="text-center mt-4">
+            <p><strong>Current Intensity:</strong> {{ device.intensity }} </p>
+
         {% csrf_token %}
         <div class="btn-group mb-3" role="group" aria-label="Device Controls">
             <button type="submit" name="action" value="turn_on" class="bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600 transition">Turn On</button>
@@ -29,40 +31,86 @@
             <button type="submit" name="action" value="turn_on" class="bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600 transition">Turn On</button>
             <button type="submit" name="action" value="turn_off" class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition">Turn Off</button>
         </div>
-        <h4 class="text-xl mt-4">Control Outlets</h4>
-        {% for outlet in device.outlets.all %}
-            <div class="mb-2">
-                <strong>Outlet {{ outlet.outlet_number }}</strong>
-                <div class="btn-group" role="group">
-                    <button type="submit" name="action" value="turn_on_outlet_{{ outlet.id }}" class="bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600 transition">Turn On</button>
-                    <button type="submit" name="action" value="turn_off_outlet_{{ outlet.id }}" class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition">Turn Off</button>
-                </div>
-                <span class="ml-2 badge {{ outlet.is_active|yesno:'bg-green-500 text-white,bg-red-500 text-white' }}">
-                    {{ outlet.is_active|yesno:'On,Off' }}
-                </span>
-            </div>
-        {% empty %}
-            <p>No outlets available for this device.</p>
-        {% endfor %}
     </form>
 
-    {% elif device.device_type == 'clima' %}
-    <form method="post" class="text-center mt-4">
-        {% csrf_token %}
-        <div class="btn-group mb-3" role="group" aria-label="Device Controls">
-            <button type="submit" name="action" value="turn_on" class="bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600 transition">Turn On</button>
-            <button type="submit" name="action" value="turn_off" class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition">Turn Off</button>
+{% elif device.device_type == 'clima' %}
+<div class="text-center mt-4 mb-4">
+    <p><strong>Current Temperature:</strong> {{ device.temperature }} °C</p>
+    <p><strong>Current Mode:</strong> {{ device.mode }}</p>
+    <p><strong>Current Fan Speed:</strong> {{ device.fan_speed }}</p>
+    <p><strong>Current Option:</strong>
+        {% if device.turbo %}
+            Turbo
+        {% endif %}
+        {% if device.swing %}
+            Swing
+        {% endif %}
+        {% if device.led %}
+            LED
+        {% endif %}
+        {% if device.sleep %}
+            Sleep
+        {% endif %}
+    </p></div>
+
+<form method="post" class="text-center mt-4">
+    {% csrf_token %}
+    <div class="btn-group mb-3" role="group" aria-label="Device Controls">
+        <button type="submit" name="action" value="turn_on" class="bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600 transition">Turn On</button>
+        <button type="submit" name="action" value="turn_off" class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition">Turn Off</button>
+    </div>
+    
+    <div class="mb-3">
+        <label for="temperature" class="block text-sm font-medium mb-1">Set Temperature (°C):</label>
+        <input type="number" name="temperature" id="temperature" class="border rounded py-2 px-3 w-full" min="16" max="30" step="1" placeholder="Set temperature">
+        <button type="submit" name="action" value="set_temperature" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition mt-2">Set Temperature</button>
+    </div>
+
+    <div class="mb-3">
+        <label for="mode" class="block text-sm font-medium mb-1">Mode:</label>
+        <select name="mode" id="mode" class="border rounded py-2 px-3 w-full">
+            <option value="" disabled>Select mode</option>
+            <option value="auto" {% if device.mode == 'auto' %}selected{% endif %}>Auto</option>
+            <option value="cool" {% if device.mode == 'cool' %}selected{% endif %}>Cool</option>
+            <option value="dry" {% if device.mode == 'dry' %}selected{% endif %}>Dry</option>
+            <option value="heat" {% if device.mode == 'heat' %}selected{% endif %}>Heat</option>
+            <option value="fan" {% if device.mode == 'fan' %}selected{% endif %}>Fan</option>
+        </select>
+        <button type="submit" name="action" value="set_mode" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition mt-2">Set Mode</button>
+    </div>
+
+    <div class="mb-3">
+        <label for="fan_speed" class="block text-sm font-medium mb-1">Fan Speed:</label>
+        <select name="fan_speed" id="fan_speed" class="border rounded py-2 px-3 w-full">
+            <option value="" disabled>Select fan speed</option>
+            <option value="auto" {% if device.fan_speed == 'auto' %}selected{% endif %}>Auto</option>
+            <option value="min" {% if device.fan_speed == 'min' %}selected{% endif %}>Min</option>
+            <option value="med" {% if device.fan_speed == 'med' %}selected{% endif %}>Med</option>
+            <option value="max" {% if device.fan_speed == 'max' %}selected{% endif %}>Max</option>
+        </select>
+        <button type="submit" name="action" value="set_fan_speed" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition mt-2">Set Fan Speed</button>
+    </div>
+
+    <div class="mb-3">
+        <label class="block text-sm font-medium mb-1">Options:</label>
+        <div class="flex justify-center">
+            <label class="mr-4">
+                <input type="radio" name="option" value="turbo" {% if device.turbo %}checked{% endif %}> Turbo
+            </label>
+            <label class="mr-4">
+                <input type="radio" name="option" value="swing" {% if device.swing %}checked{% endif %}> Swing
+            </label>
+            <label class="mr-4">
+                <input type="radio" name="option" value="led" {% if device.led %}checked{% endif %}> LED
+            </label>
+            <label>
+                <input type="radio" name="option" value="sleep" {% if device.sleep %}checked{% endif %}> Sleep
+            </label>
         </div>
-        <div class="mb-3">
-            <label for="temperature" class="block text-sm font-medium mb-1">Set Temperature (°C):</label>
-            <input type="number" name="temperature" id="temperature" class="border rounded py-2 px-3 w-full" min="16" max="30" step="1" placeholder="Set temperature">
-        </div>
-
-
-        <button type="submit" name="action" value="set_temperature" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition">Set Temperature</button>
-    </form>
-    {% endif %}
-
+        <button type="submit" name="action" value="set_clima" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition mt-2">Apply Option</button>
+    </div>
+</form>
+{% endif %}
     <p class="text-center mt-4 text-lg"><strong>Status:</strong> {{ device.is_active|yesno:"On,Off" }}</p>
     
     <h4 class="text-center mt-4 text-xl">Consumption Records</h4>

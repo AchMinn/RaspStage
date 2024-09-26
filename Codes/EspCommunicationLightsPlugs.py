@@ -1,10 +1,10 @@
 import paho.mqtt.client as mqtt
+import re
 
 # MQTT configuration
-MQTT_BROKER = 'localhost'
+MQTT_BROKER = '192.168.0.103' 
 MQTT_PORT = 1883
 MQTT_TOPIC_ONOFF = 'smarthome/devices/onoff'
-MQTT_TOPIC_OUTLET = 'smarthome/devices/outlet'
 MQTT_TOPIC_INTENSITY = 'smarthome/devices/intensity'
 MQTT_TOPIC_TEMPERATURE = 'smarthome/devices/temperature'
 
@@ -18,8 +18,6 @@ def on_message(client, userdata, message):
 
     if topic == MQTT_TOPIC_ONOFF:
         handle_device_onoff(msg)
-    elif topic == MQTT_TOPIC_OUTLET:
-        handle_outlet_control(msg)
     elif topic == MQTT_TOPIC_INTENSITY:
         handle_intensity_change(msg)
     elif topic == MQTT_TOPIC_TEMPERATURE:
@@ -32,30 +30,30 @@ def handle_device_onoff(msg):
         if device_info:
             device_name, device_type = device_info
             print(f"Turning on {device_type}: {device_name}")
-            # Add logic to turn on the device
+            led_number = extract_led_number(device_name)
+            if led_number is not None:
+                mqtt_client.publish("SmartLightNode1_CMD", f"{led_number}_1")  # Turn on
+            else:
+                print("Error: LED number could not be extracted.")
 
     elif "turned off" in msg:
         device_info = extract_device_info(msg)
         if device_info:
             device_name, device_type = device_info
             print(f"Turning off {device_type}: {device_name}")
-            # Add logic to turn off the device
+            led_number = extract_led_number(device_name)
+            if led_number is not None:
+                mqtt_client.publish("SmartLightNode1_CMD", f"{led_number}_0")  # Turn off
+            else:
+                print("Error: LED number could not be extracted.")
 
-def handle_outlet_control(msg):
-    """Handle outlet control messages."""
-    if "turned on" in msg:
-        outlet_info = extract_outlet_info(msg)
-        if outlet_info:
-            outlet_id, device_name = outlet_info
-            print(f"Turning on outlet: {outlet_id} on device: {device_name}")
-            # Add logic to turn on the outlet
-
-    elif "turned off" in msg:
-        outlet_info = extract_outlet_info(msg)
-        if outlet_info:
-            outlet_id, device_name = outlet_info
-            print(f"Turning off outlet: {outlet_id} on device: {device_name}")
-            # Add logic to turn off the outlet
+def extract_led_number(device_name):
+    """Extract the LED number from the device name."""
+    match = re.search(r'(\d+)', device_name)  # Find digits in the device name
+    if match:
+        return int(match.group(1))  # Return the number as an integer
+    print(f"Error: No LED number found in '{device_name}'")
+    return None
 
 def handle_intensity_change(msg):
     """Handle intensity change messages."""
@@ -63,8 +61,11 @@ def handle_intensity_change(msg):
     device_info = extract_device_info(msg)
     if device_info and intensity is not None:
         device_name, device_type = device_info
-        print(f"Setting intensity for {device_type}: {device_name} to {intensity}")
-        # Add logic to change intensity
+        print(f"Setting intensity for: {device_name} to {intensity}")
+        # Publish to a topic that only the Arduino knows
+        mqtt_client.publish("TOPIC", f"Setting intensity for: {device_name} to {intensity}")
+    else:
+        print("Error: Intensity or device info could not be extracted.")
 
 def handle_temperature_change(msg):
     """Handle temperature change messages."""
@@ -72,14 +73,17 @@ def handle_temperature_change(msg):
     device_info = extract_device_info(msg)
     if device_info and temperature is not None:
         device_name, device_type = device_info
-        print(f"Setting temperature for {device_type}: {device_name} to {temperature}°C")
+        print(f"Setting temperature for Clima: {device_name} to {temperature}°C")
         # Add logic to set the temperature
+    else:
+        print("Error: Temperature or device info could not be extracted.")
 
 def extract_intensity(msg):
     """Extract intensity value from the message."""
     parts = msg.split("'")
     if len(parts) >= 5:
         return parts[3]  # Intensity value is expected here
+    print("Error: Intensity value could not be extracted.")
     return None
 
 def extract_temperature(msg):
@@ -87,6 +91,7 @@ def extract_temperature(msg):
     parts = msg.split("'")
     if len(parts) >= 5:
         return parts[3]  # Temperature value is expected here
+    print("Error: Temperature value could not be extracted.")
     return None
 
 def extract_device_info(msg):
@@ -96,28 +101,30 @@ def extract_device_info(msg):
         device_name = parts[1]  # Device name
         device_type = parts[3]   # Device type
         return device_name, device_type
-    return None
-
-def extract_outlet_info(msg):
-    """Extract outlet ID and associated device name from the message."""
-    parts = msg.split("'")
-    if len(parts) >= 5:
-        outlet_id = parts[1]     # Outlet ID
-        device_name = parts[3]    # Device name
-        return outlet_id, device_name
+    print("Error: Device info could not be extracted.")
     return None
 
 # Connect to the MQTT broker
-mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
+try:
+    mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
+except Exception as e:
+    print(f"Error: Could not connect to MQTT broker: {e}")
 
 # Assign the callback function
 mqtt_client.on_message = on_message
 
 # Subscribe to relevant topics
-mqtt_client.subscribe(MQTT_TOPIC_ONOFF)
-mqtt_client.subscribe(MQTT_TOPIC_OUTLET)
-mqtt_client.subscribe(MQTT_TOPIC_INTENSITY)
-mqtt_client.subscribe(MQTT_TOPIC_TEMPERATURE)
+try:
+    mqtt_client.subscribe(MQTT_TOPIC_ONOFF)
+    mqtt_client.subscribe(MQTT_TOPIC_INTENSITY)
+    mqtt_client.subscribe(MQTT_TOPIC_TEMPERATURE)
+except Exception as e:
+    print(f"Error: Could not subscribe to topics: {e}")
 
 # Start the loop to process received messages
-mqtt_client.loop_forever()
+try:
+    mqtt_client.loop_forever()
+except KeyboardInterrupt:
+    print("Exiting...")
+except Exception as e:
+    print(f"Error in MQTT loop: {e}")

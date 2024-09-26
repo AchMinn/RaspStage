@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import Room, Device, Measurement, User
+from .models import Room, Device, Measurement
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
 
 class DeviceInline(admin.TabularInline):
     model = Device
