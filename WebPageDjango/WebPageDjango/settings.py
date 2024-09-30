@@ -136,11 +136,11 @@ SECURE_HSTS_PRELOAD = True  # Optional
 
 # Redirect all HTTP traffic to HTTPS
 
-# SECURE_SSL_REDIRECT = True 
+SECURE_SSL_REDIRECT = True 
 
 # Ensure session cookies are only sent over HTTPS
 
-# SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
 # Make the CSRF cookie secure
 
