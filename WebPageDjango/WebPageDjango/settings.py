@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['smarthome-ailab.onrender.com']
 
 # Application definition
 
@@ -128,20 +128,20 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'
 
-# # Enable HTTP Strict Transport Security (HSTS)
+# Enable HTTP Strict Transport Security (HSTS)
 
-# SECURE_HSTS_SECONDS = 3600  # or any appropriate duration
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Optional
-# SECURE_HSTS_PRELOAD = True  # Optional
+SECURE_HSTS_SECONDS = 3600  # or any appropriate duration
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Optional
+SECURE_HSTS_PRELOAD = True  # Optional
 
-# # Redirect all HTTP traffic to HTTPS
+# Redirect all HTTP traffic to HTTPS
 
-# SECURE_SSL_REDIRECT = True 
+SECURE_SSL_REDIRECT = True 
 
-# # Ensure session cookies are only sent over HTTPS
+# Ensure session cookies are only sent over HTTPS
 
-# SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
-# # Make the CSRF cookie secure
+# Make the CSRF cookie secure
 
-# CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
