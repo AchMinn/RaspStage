@@ -25,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG') == 'True'
+DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = ['smarthome-ailab.onrender.com']
+ALLOWED_HOSTS = ['smarthome-ailab.onrender.com','127.0.0.1']
 
 # Application definition
 
@@ -136,11 +136,11 @@ SECURE_HSTS_PRELOAD = True  # Optional
 
 # Redirect all HTTP traffic to HTTPS
 
-SECURE_SSL_REDIRECT = True 
+# SECURE_SSL_REDIRECT = True 
 
 # Ensure session cookies are only sent over HTTPS
 
-SESSION_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
 
 # Make the CSRF cookie secure
 
