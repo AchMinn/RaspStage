@@ -16,18 +16,16 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-j$-570(kz!5_14g+8g93-1+v9=1xe26(*2*48=z-k##y65(r6o'
+SECRET_KEY = 'l7%&7va(7!y9b!kk2ops6ijxod#$ysz)wz8u+$%_2)2#!f&6-2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -39,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Add our new application
-    'smarthome.apps.SmarthomeConfig', # This object was created for us in /smarthome/apps.py
+    'smarthome.apps.SmarthomeConfig',  # This object was created for us in /smarthome/apps.py
     'tailwind',
 ]
 
@@ -74,17 +72,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'WebPageDjango.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'smarthome_db',  # Your database name
+        'USER': 'databaseuser',   # Your PostgreSQL username
+        'PASSWORD': 'databasepassword',  # Your PostgreSQL password
+        'HOST': 'localhost',  # Set to 'db' if using Docker
+        'PORT': '',           # Default is 5432
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -104,7 +104,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -116,7 +115,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
@@ -127,3 +125,21 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'
+
+# # Enable HTTP Strict Transport Security (HSTS)
+
+# SECURE_HSTS_SECONDS = 3600  # or any appropriate duration
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Optional
+# SECURE_HSTS_PRELOAD = True  # Optional
+
+# # Redirect all HTTP traffic to HTTPS
+
+# SECURE_SSL_REDIRECT = True 
+
+# # Ensure session cookies are only sent over HTTPS
+
+# SESSION_COOKIE_SECURE = True
+
+# # Make the CSRF cookie secure
+
+# CSRF_COOKIE_SECURE = True

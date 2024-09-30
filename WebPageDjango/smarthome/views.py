@@ -28,9 +28,12 @@ def home_view(request):
     # Active devices (is_active = True)
     num_devices_active = Device.objects.filter(is_active=True).count()
 
-    # Get a list of unique device names
-    device_names = Device.objects.values_list('name', flat=True).distinct()
-    num_device_types = len(device_names)
+    # Count devices by type
+    num_lamp_devices = Device.objects.filter(device_type='lampe').count()
+    num_clima_devices = Device.objects.filter(device_type='clima').count()
+    num_plug_devices = Device.objects.filter(device_type='plug').count()
+
+
 
     # Generate counts for devices and rooms containing a particular word (case-insensitive)
     search_word = request.GET.get('search_word', '').lower()
@@ -41,7 +44,9 @@ def home_view(request):
         'num_rooms': num_rooms,
         'num_devices': num_devices,
         'num_devices_active': num_devices_active,
-        'num_device_types': num_device_types,
+        'num_lamp_devices': num_lamp_devices,
+        'num_clima_devices': num_clima_devices,
+        'num_plug_devices': num_plug_devices,
         'num_rooms_containing': num_rooms_containing,
         'num_devices_containing': num_devices_containing,
         'search_word': search_word,
@@ -140,7 +145,7 @@ class DeviceDetailView(DetailView):
         return context
 
 # MQTT configuration
-MQTT_BROKER = '192.168.0.103'
+MQTT_BROKER = 'localhost'
 MQTT_PORT = 1883  # or 8883 for SSL
 MQTT_TOPIC_ONOFF = 'smarthome/devices/onoff'  # Topic for on/off control
 MQTT_TOPIC_INTENSITY = 'smarthome/devices/intensity'  # Topic for intensity control
