@@ -1,6 +1,8 @@
 import paho.mqtt.client as mqtt
 import re
 import json
+import subprocess
+import time
 
 # MQTT configuration
 MQTT_BROKER = '192.168.0.103'
@@ -14,8 +16,25 @@ MQTT_TOPIC_OPTIONS = 'smarthome/devices/options'
 MQTT_TOPIC_ONOFF = 'smarthome/devices/onoff'
 MQTT_TOPIC_CLIMA_COMMAND = 'SmartClima_CMD'
 
+
+
 # Initialize the MQTT client
 mqtt_client = mqtt.Client()
+
+# def check_wifi(ssid):
+#     """Check if connected to the specified Wi-Fi SSID."""
+#     try:
+#         current_ssid = subprocess.check_output(["iwgetid", "-r"]).decode().strip()
+#         return current_ssid == ssid
+#     except Exception as e:
+#         print(f"Error checking Wi-Fi: {e}")
+#         return False
+
+# def wait_for_wifi(ssid):
+#     """Wait until connected to the specified SSID."""
+#     while not check_wifi(ssid):
+#         print(f"Waiting for Wi-Fi connection to SSID: {ssid}...")
+#         time.sleep(5)
 
 def on_message(client, userdata, message):
     msg = message.payload.decode('utf-8')
@@ -61,16 +80,19 @@ def handle_temperature_change(msg):
     if device_info and temperature is not None:
         device_name, device_type = device_info
         print(f"Setting temperature for Clima: {device_name} to {temperature}°C")
-        send_command_to_esp(1, None, int(temperature), None, {})
+        send_command_to_esp(1, None, temperature, None, {})
 
 def handle_mode_change(msg):
     """Handle mode change messages."""
     mode = extract_mode(msg)
     device_info = extract_device_info(msg)
+    
     if device_info and mode is not None:
         device_name, device_type = device_info
         print(f"Setting mode for Clima: {device_name} to {mode}")
-        send_command_to_esp(1, int(mode), None, None, {})
+        
+        # Pass mode as a string, no conversion to int
+        send_command_to_esp(1, mode, None, None, {})
 
 def handle_fan_speed_change(msg):
     """Handle fan speed change messages."""
@@ -79,7 +101,7 @@ def handle_fan_speed_change(msg):
     if device_info and fan_speed is not None:
         device_name, device_type = device_info
         print(f"Setting fan speed for Clima: {device_name} to {fan_speed}")
-        send_command_to_esp(1, None, None, int(fan_speed), {})
+        send_command_to_esp(1, None, None, fan_speed, {})
 
 def handle_option_change(msg):
     """Handle option change messages."""
@@ -94,11 +116,16 @@ def handle_on_off_change(msg):
     """Handle ON/OFF messages."""
     power_state = extract_on_off(msg)
     device_info = extract_device_info(msg)
+    
     if device_info and power_state is not None:
-        device_name, device_type = device_info
-        power = 1 if power_state == 'on' else 0
-        print(f"Setting power state for Clima: {device_name} to {'ON' if power else 'OFF'}")
-        send_command_to_esp(power, None, None, None, {})
+        device_name, device_type = device_info        
+        # Check if the device type is 'Clima'
+        if device_type.lower() == 'clima':
+            power = 1 if power_state == 'on' else 0
+            print(f"Setting power state for Clima: {device_name} to {'ON' if power else 'OFF'}")
+            send_command_to_esp(power, None, None, None, {})
+        else:
+            print(f"Ignoring ON/OFF command for non-Clima device: {device_name}")
 
 def extract_on_off(msg):
     """Extract ON/OFF state from the message."""
@@ -136,15 +163,20 @@ def extract_fan_speed(msg):
 def extract_options(msg):
     """Extract additional options from the message."""
     options = {}
-    if "turbo" in msg:
-        options['turbo'] = int(msg.get('turbo', 0))
-    if "swing" in msg:
-        options['swing'] = int(msg.get('swing', 0))
-    if "led" in msg:
-        options['led'] = int(msg.get('led', 0))
-    if "sleep" in msg:
-        options['sleep'] = int(msg.get('sleep', 0))
-    return options
+    
+    if "Turbo" in msg:
+        options['turbo'] = 1  # Activated
+    if "Swing" in msg:
+        options['swing'] = 1  # Activated
+    if "LED" in msg:
+        options['led'] = 1  # Activated
+    if "Sleep" in msg:
+        options['sleep'] = 1  # Activated
+    
+    return options if options else None  # Return None if no options found
+
+# Wait for Wi-Fi connection to the specified SSID
+# wait_for_wifi("AILAB")
 
 # Connect to the MQTT broker
 try:
@@ -158,13 +190,17 @@ mqtt_client.on_message = on_message
 # Subscribe to relevant topics
 try:
     mqtt_client.subscribe(MQTT_TOPIC_TEMPERATURE)
+    print(f"Subscribed to {MQTT_TOPIC_TEMPERATURE}")
     mqtt_client.subscribe(MQTT_TOPIC_MODE)
+    print(f"Subscribed to {MQTT_TOPIC_MODE}")
     mqtt_client.subscribe(MQTT_TOPIC_FAN_SPEED)
+    print(f"Subscribed to {MQTT_TOPIC_FAN_SPEED}")
     mqtt_client.subscribe(MQTT_TOPIC_OPTIONS)
-    mqtt_client.subscribe(MQTT_TOPIC_ONOFF) 
+    print(f"Subscribed to {MQTT_TOPIC_OPTIONS}")
+    mqtt_client.subscribe(MQTT_TOPIC_ONOFF)
+    print(f"Subscribed to {MQTT_TOPIC_ONOFF}")
 except Exception as e:
     print(f"Error: Could not subscribe to topics: {e}")
-
 # Start the loop to process received messages
 try:
     mqtt_client.loop_forever()

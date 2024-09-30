@@ -71,7 +71,7 @@ class Device(models.Model):
         if self.device_type in ['lampe', 'plug']:
             limit = 5
         elif self.device_type == 'clima':
-            limit = 3
+            limit = 1
         
         current_count = Device.objects.filter(device_type=self.device_type).count()
         if current_count >= limit and self.pk is None:  # Only check for new devices

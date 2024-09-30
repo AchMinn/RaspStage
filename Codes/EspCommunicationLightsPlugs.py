@@ -1,5 +1,7 @@
 import paho.mqtt.client as mqtt
 import re
+import subprocess
+import time
 
 # MQTT configuration
 MQTT_BROKER = '192.168.0.103' 
@@ -10,6 +12,21 @@ MQTT_TOPIC_INTENSITY = 'smarthome/devices/intensity'
 # Initialize the MQTT client
 mqtt_client = mqtt.Client()
 
+def check_wifi(ssid):
+    """Check if connected to the specified Wi-Fi SSID."""
+    try:
+        current_ssid = subprocess.check_output(["iwgetid", "-r"]).decode().strip()
+        return current_ssid == ssid
+    except Exception as e:
+        print(f"Error checking Wi-Fi: {e}")
+        return False
+
+def wait_for_wifi(ssid):
+    """Wait until connected to the specified SSID."""
+    while not check_wifi(ssid):
+        print(f"Waiting for Wi-Fi connection to SSID: {ssid}...")
+        time.sleep(5)
+
 def on_message(client, userdata, message):
     msg = message.payload.decode('utf-8')
     topic = message.topic
@@ -19,8 +36,6 @@ def on_message(client, userdata, message):
         handle_device_onoff(msg)
     elif topic == MQTT_TOPIC_INTENSITY:
         handle_intensity_change(msg)
-    elif topic == MQTT_TOPIC_TEMPERATURE:
-        handle_temperature_change(msg)
 
 def handle_device_onoff(msg):
     """Handle device on/off messages."""
@@ -28,9 +43,9 @@ def handle_device_onoff(msg):
         device_info = extract_device_info(msg)
         if device_info:
             device_name, device_type = device_info
-            print(f"Turning on {device_type}: {device_name}")
             led_number = extract_led_number(device_name)
             if led_number is not None:
+                print(f"Turning on {device_type}: {device_name}")
                 mqtt_client.publish("SmartLightNode1_CMD", f"{led_number}_1")  # Turn on
             else:
                 print("Error: LED number could not be extracted.")
@@ -39,9 +54,9 @@ def handle_device_onoff(msg):
         device_info = extract_device_info(msg)
         if device_info:
             device_name, device_type = device_info
-            print(f"Turning off {device_type}: {device_name}")
             led_number = extract_led_number(device_name)
             if led_number is not None:
+                print(f"Turning off {device_type}: {device_name}")
                 mqtt_client.publish("SmartLightNode1_CMD", f"{led_number}_0")  # Turn off
             else:
                 print("Error: LED number could not be extracted.")
@@ -83,6 +98,9 @@ def extract_device_info(msg):
         return device_name, device_type
     print("Error: Device info could not be extracted.")
     return None
+
+# Wait for Wi-Fi connection to the specified SSID
+wait_for_wifi("AILAB")
 
 # Connect to the MQTT broker
 try:
