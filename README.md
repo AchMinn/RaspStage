@@ -23,8 +23,8 @@
 1. **Clone the Repository**
 
 	```bash
-   git clone https://github.com/yourusername/smarthome-dashboard.git
-   cd smarthome-dashboard
+   git clone https://github.com/AchMinn/RaspStage.git
+   cd RaspStage
  
 2. **Create a Virtual Environment (if needed)**
 
@@ -37,9 +37,9 @@
 	```bash
 	pip install -r requirements.txt
 
-4. **Configure the database**
+4. **Create a .env File**
    	```bash
-    	Update the DATABASES settings in your_project/settings.py to match your database configuration. By default, SQLite is used for simplicity.
+    	Manually create a .env file with the necessary environment variables. ( See Settings.py to know what variables are needed )
     
 5. **Run migrations**
 
@@ -110,10 +110,6 @@ Tracks changes in your smarthome web app.
 ## Contributing
 
 Contributions are welcome! Please fork the repository and submit a pull request with your changes. Ensure that your code adheres to the project’s coding standards and passes all tests.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Contact
 
