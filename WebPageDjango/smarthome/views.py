@@ -145,7 +145,7 @@ class DeviceDetailView(DetailView):
         return context
 
 # MQTT configuration
-MQTT_BROKER = '192.168.11.115' 
+MQTT_BROKER = '192.168.0.103' 
 MQTT_PORT = 1883  # or 8883 for SSL
 MQTT_TOPIC_ONOFF = 'smarthome/devices/onoff'  # Topic for on/off control
 MQTT_TOPIC_INTENSITY = 'smarthome/devices/intensity'  # Topic for intensity control
