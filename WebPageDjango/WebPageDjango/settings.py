@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1']
+ALLOWED_HOSTS = ['localhost','127.0.0.1','192.168.0.102']
 
 # Application definition
 
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # Add our new application
     'smarthome.apps.SmarthomeConfig',  # This object was created for us in /smarthome/apps.py
     'tailwind',
+    'django_extensions',  # Add this line
 ]
 
 MIDDLEWARE = [
@@ -79,15 +80,10 @@ WSGI_APPLICATION = 'WebPageDjango.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DATABASE_NAME'),
-        'USER': os.getenv('DATABASE_USER'),
-        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-        'HOST': os.getenv('DATABASE_HOST'),
-        'PORT': os.getenv('DATABASE_PORT', '5432'),  # Default to 5432 if not set
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),  # You can specify a different path if needed
     }
 }
-
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -136,11 +132,11 @@ SECURE_HSTS_PRELOAD = True  # Optional
 
 # Redirect all HTTP traffic to HTTPS
 
-# SECURE_SSL_REDIRECT = True 
+SECURE_SSL_REDIRECT = True 
 
 # Ensure session cookies are only sent over HTTPS
 
-# SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
 # Make the CSRF cookie secure
 

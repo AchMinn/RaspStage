@@ -16,7 +16,7 @@
 
 - Python 3.8+
 - Django 3.2+
-- PostgreSQL (recommended, but SQLite is also supported)
+- (If any help needed with installing, open a new issue)
 
 ### Installation
 
@@ -45,16 +45,22 @@
 
 	```bash
  	python manage.py migrate
- 
-6. **Create a superuser**
+
+6. ** Create the ssl certificate "in your root directory containing manage.py"**
+
+ 	```bash
+ 	openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout key.pem -out cert.pem
+
+
+7. **Create a superuser**
    	```bash
     	python manage.py createsuperuser
     
-7. **Run the Development Server**
+8. **Run the Development Server Locally**
    	```bash
-    	python manage.py runserver
-    
-Access the application at http://127.0.0.1:8000/.
+    	python manage.py runserver_plus 0.0.0.0:8000 --cert-file cert.pem --key-file key.pem
+
+Access the application at http://{ip address}:8000/
 
 ## Usage
 

@@ -1,10 +1,8 @@
 Django==5.0.7
-asgiref==3.8.1
+django-extensions==3.2.3
 django-tailwind==3.8.0
-gunicorn==23.0.0
-psycopg2==2.9.9  # if you're using PostgreSQL
-python-dotenv==1.0.1  # for environment variable management
-requests==2.28.1  # for making HTTP requests
-Pillow==10.3.0  # for image handling
-sqlparse==0.5.1  # required by Django for SQL parsing
-paho-mqtt==2.1.0  # for MQTT communication
+paho-mqtt==2.1.0
+pillow==10.3.0
+pipreqs==0.5.0
+Werkzeug==3.0.4
+pyOpenSSL
