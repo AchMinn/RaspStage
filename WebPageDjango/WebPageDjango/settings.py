@@ -15,22 +15,19 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG')
+DEBUG = os.getenv('DEBUG', 'False') == 'True'  # Default to False if not set
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1','192.168.0.102']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.0.102', '0.0.0.0']  # Replace with your domain
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -38,10 +35,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Add our new application
-    'smarthome.apps.SmarthomeConfig',  # This object was created for us in /smarthome/apps.py
+    'smarthome.apps.SmarthomeConfig',
     'tailwind',
-    'django_extensions',  # Add this line
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -76,17 +72,14 @@ TEMPLATES = [
 WSGI_APPLICATION = 'WebPageDjango.wsgi.application'
 
 # Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),  # You can specify a different path if needed
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -103,41 +96,33 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
+STATIC_URL = '/static/'  # Ensure leading slash
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Directory for collectstatic
 
-STATIC_URL = 'static/'
+# Ensure static files are served correctly in production
+if not DEBUG:
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'
 
 # Enable HTTP Strict Transport Security (HSTS)
-
-SECURE_HSTS_SECONDS = 3600  # or any appropriate duration
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Optional
-SECURE_HSTS_PRELOAD = True  # Optional
+SECURE_HSTS_SECONDS = 3600
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
 # Redirect all HTTP traffic to HTTPS
-
 SECURE_SSL_REDIRECT = True 
 
 # Ensure session cookies are only sent over HTTPS
-
 SESSION_COOKIE_SECURE = True
 
 # Make the CSRF cookie secure
-
 CSRF_COOKIE_SECURE = True
