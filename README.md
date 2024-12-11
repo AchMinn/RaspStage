@@ -61,9 +61,14 @@
     	python manage.py runserver_plus 0.0.0.0:8000 --cert-file cert.pem --key-file key.pem
 
 8. **Run the Production Deployement Server Locally**
+	- With no logging
    	```bash
     	gunicorn --bind 0.0.0.0:8000 --certfile cert.pem --keyfile key.pem WebPageDjango.wsgi:application
-
+	```
+	- With logging
+	```bash
+ 	gunicorn --capture-output --enable-stdio-inheritance --log-file=- --bind 0.0.0.0:8000 --certfile cert.pem --keyfile key.pem WebPageDjango.wsgi:application
+	
 Access the application at http://{ip address}:8000/
 
 ## Usage
